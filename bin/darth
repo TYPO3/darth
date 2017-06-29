@@ -1,0 +1,21 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * This file is part of the TYPO3 project.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+require __DIR__ . '/../vendor/autoload.php';
+
+$dotenv = new \Symfony\Component\Dotenv\Dotenv();
+$dotenv->load(__DIR__ . '/../.env', __DIR__ . '/../.env.dist');
+
+$application = new \TYPO3\Darth\Application('TYPO3 Release Builder', '1.0.0');
+$application->add(new \TYPO3\Darth\Command\InitializeCommand('init'));
+$application->add(new \TYPO3\Darth\Command\ReleaseCommand('release'));
+$application->add(new \TYPO3\Darth\Command\PackageCommand('package'));
+$application->add(new \TYPO3\Darth\Command\PublishCommand('publish'));
+$application->run();

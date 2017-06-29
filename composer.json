@@ -1,0 +1,30 @@
+{
+	"description": "Creates a release commit and tag from a git repository, packages artefacts and shoves them up to the cloud",
+	"keywords": ["typo3", "azure", "tag", "gpg", "git"],
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Benni Mack",
+			"role": "Maintainer"
+		}
+	],
+	"require": {
+		"php": "^7.0",
+		"symfony/finder": "^3.3",
+		"symfony/dotenv": "^3.3",
+		"symfony/console": "^3.3",
+		"symfony/yaml": "^3.3",
+		"cpliakas/git-wrapper": "^1.7",
+		"typo3fluid/fluid": "^2.3",
+		"microsoft/azure-storage": "^0.16.0"
+	},
+	"require-dev": {
+		"friendsofphp/php-cs-fixer": "^2.3",
+		"phpunit/phpunit": "^6.2"
+	},
+	"autoload": {
+		"psr-4": {
+			"TYPO3\\Darth\\": "src/"
+		}
+	}
+}

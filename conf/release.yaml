@@ -1,0 +1,61 @@
+updateFiles:
+  -
+    file: "typo3/sysext/core/Classes/Core/SystemEnvironmentBuilder.php"
+    # Escaped ' is done via ''
+    pattern: '\''TYPO3_version\'',\s*\''([^\'']+)'
+    type: "bugfixVersion"
+  -
+    file: "typo3/sysext/core/Classes/Core/SystemEnvironmentBuilder.php"
+    pattern: '\''TYPO3_branch\'',\s*\''([^\'']+)'
+    type: "minorVersion"
+  -
+    file: "typo3/sysext/*/ext_emconf.php"
+    pattern: '\''version\''\s=>\s\''([^\'']+)'
+    type: "bugfixVersion"
+  -
+    file: "typo3/sysext/*/ext_emconf.php"
+    pattern: '\''typo3\''\s=>\s\''([0-9.]+)-([^\'']+)'
+    type: "bugfixRange"
+  -
+    file: "typo3/sysext/core/Classes/Core/SystemEnvironmentBuilder.php"
+    # Escaped ' is done via ''
+    pattern: '\''TYPO3_version\'',\s*\''([^\'']+)'
+    type: "nextDevVersion"
+# todo do we need to touch composer.json files as well, once the versions/requirements are in there?
+
+excludeFromPackaging:
+  ".":
+    - ".editorconfig"
+    - ".gitignore"
+    - ".gitmodules"
+    - ".gitattributes"
+    - ".gitreview"
+    - ".stylelintrc"
+    - "dynamicReturnTypeMeta.json"
+    - "bin"
+    - "Build"
+    - "*.webprj"
+    - "*.orig"
+    - "*~"
+    - ".travis.yml"
+    - ".appveyor.yml"
+  "**":
+    - ".gitignore"
+    - ".git/"
+    - ".svn"
+    - ".travis.yml"
+    - ".appveyor.yml"
+  "vendor/**":
+    - "Test"
+    - "tests"
+    - "Tests"
+    - "docs"
+    - "examples"
+    - "example.php"
+
+executableFilesInPackage:
+  - "*.phpcron"
+  - "*.phpsh"
+  - "*.sh"
+  - "*.pl"
+  - "typo3/sysext/core/bin/typo3"
