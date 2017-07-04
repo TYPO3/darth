@@ -8,7 +8,7 @@ Darth is a command line application to build and publish releases.
 
 Sets up the working local repository by removing all previous set ups and re-cloning the remote repository.
 
-    ./bin/darth initialize
+    ./bin/darth init
 
 
 ### 2. Release (Commit and Tag)
