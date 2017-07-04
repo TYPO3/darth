@@ -17,6 +17,38 @@ updateFiles:
     pattern: '\''typo3\''\s=>\s\''([0-9.]+)-([^\'']+)'
     type: "bugfixRange"
   -
+    file: "typo3/sysext/*/ext_emconf.php"
+    pattern: '\''frontend\''\s=>\s\''([0-9.]+)-([^\'']+)'
+    type: "bugfixRange"
+  -
+    file: "typo3/sysext/*/ext_emconf.php"
+    pattern: '\''backend\''\s=>\s\''([0-9.]+)-([^\'']+)'
+    type: "bugfixRange"
+  -
+    file: "typo3/sysext/*/ext_emconf.php"
+    pattern: '\''extbase\''\s=>\s\''([0-9.]+)-([^\'']+)'
+    type: "bugfixRange"
+  -
+    file: "typo3/sysext/*/ext_emconf.php"
+    pattern: '\''extensionmanager\''\s=>\s\''([0-9.]+)-([^\'']+)'
+    type: "bugfixRange"
+  -
+    file: "typo3/sysext/*/ext_emconf.php"
+    pattern: '\''func\''\s=>\s\''([0-9.]+)-([^\'']+)'
+    type: "bugfixRange"
+  -
+    file: "typo3/sysext/*/ext_emconf.php"
+    pattern: '\''info\''\s=>\s\''([0-9.]+)-([^\'']+)'
+    type: "bugfixRange"
+  -
+    file: "typo3/sysext/*/ext_emconf.php"
+    pattern: '\''taskcenter\''\s=>\s\''([0-9.]+)-([^\'']+)'
+    type: "bugfixRange"
+  -
+    file: "typo3/sysext/*/ext_emconf.php"
+    pattern: '\''sys_action\''\s=>\s\''([0-9.]+)-([^\'']+)'
+    type: "bugfixRange"
+  -
     file: "typo3/sysext/core/Classes/Core/SystemEnvironmentBuilder.php"
     # Escaped ' is done via ''
     pattern: '\''TYPO3_version\'',\s*\''([^\'']+)'
