@@ -60,11 +60,13 @@ See .env.dist which sets most configuration options already, however, the remote
 artefacts must be set in a custom `.env` file.
 
 Information when updating files before commiting a release, as well as files excluded for packaging are found
-within `conf/common.yaml`.
+within `conf/release.yaml`.
 
 Ensure that you have all tools (shasum, gpg, composer) installed locally, also that you have a proper gpg key
 in your git configuration (`git config user.signingkey`, can also be set globally).
 
+For MacOS users please install gnu-tar (`brew install gnu-tar`) and use that binary in your custom .env configuration
+to ensure compatibility across all destination servers.
 
 ## Credits
 Initially developed in PHP by Benni Mack, derived from Phing deployment scripts by Oliver Hader and Benni Mack, which
