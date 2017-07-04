@@ -127,7 +127,7 @@ class ReleaseCommand extends Command
         if ($input->hasOption('commitMessage') && $input->getOption('commitMessage')) {
             $commitMessage .= "\n\n" . $input->getOption('commitMessage');
         }
-        $git->commit('-a', '--allow-empty', '-m', trim($commitMessage));
+        $git->commit('-a', '-S', '--allow-empty', '-m', trim($commitMessage));
         $localReleaseCommitHash = $this->gitHelper->getCurrentRevision();
         $this->io->success('Release commit is ' . $localReleaseCommitHash . ' with message ' . "\n\n" . $commitMessage);
 
@@ -147,7 +147,8 @@ class ReleaseCommand extends Command
         }
 
         // Commit is pushed, now wait until gerrit and the remote git repository are in sync again
-        $git->reset('--hard'); // now it should be back to $commitHashBeforeRelease
+        $git->reset('--hard', $remoteBranchWithRemoteName); // now it should be back to $commitHashBeforeRelease
+        $git->pull();
         $attempts = 0;
         while ($this->gitHelper->getCurrentRevision() === $commitHashBeforeRelease) {
             $git->pull();
