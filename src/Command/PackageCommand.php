@@ -174,7 +174,7 @@ class PackageCommand extends Command
         $git->archive('--format', 'tar', '-o', $archiveFile, $revision);
 
         // Extract and remove the GIT archive
-        (new Process('tar xf ' . $archiveFile . ' && rm ' . $archiveFile, $sourceCodeDirectory))->run();
+        (new Process(getenv('TAR_COMMAND') . ' xf ' . $archiveFile . ' && rm ' . $archiveFile, $sourceCodeDirectory))->run();
 
         // Run "composer install"
         $this->runComposerCommand($sourceCodeDirectory);
@@ -280,7 +280,7 @@ class PackageCommand extends Command
             'zip' => $artefactBaseName . '.zip',
         ];
 
-        (new Process('tar -czf ' . $artefactDirectory . '/' . $artefacts['tar.gz'] . ' ' . $artefactBaseName . '/', dirname($sourceCodeDirectory)))->run();
+        (new Process(getenv('TAR_COMMAND') . ' -czf ' . $artefactDirectory . '/' . $artefacts['tar.gz'] . ' ' . $artefactBaseName . '/', dirname($sourceCodeDirectory)))->run();
         (new Process('zip -rq9 ' . $artefactDirectory . '/' . $artefacts['zip'] . ' ' . $artefactBaseName . '/', dirname($sourceCodeDirectory)))->run();
 
         // create checksums
