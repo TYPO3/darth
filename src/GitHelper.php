@@ -74,7 +74,7 @@ class GitHelper
         $this->git = $gitWrapper->workingCopy($this->workingDirectory);
         $this->git->clean('-d', '-f')
             ->reset('--hard')
-            ->fetch();
+            ->fetch('--tags');
         if ($revision) {
             $this->git->checkout($revision);
         }
