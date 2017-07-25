@@ -89,6 +89,7 @@ class PackageCommand extends Command
 
         $this->io->section('Step 1: Getting the source files from git and dependencies from composer.');
         $git = $this->gitHelper->initializeCleanWorkingCopy($revision);
+        $this->io->note('Checked out ' . $revision);
 
         $sourceCodeDirectory = $this->initializeCleanSourceCodeDirectory($version);
         $artefactsDirectory = $this->getApplication()->getArtefactsDirectory($version);
@@ -261,6 +262,9 @@ class PackageCommand extends Command
                 chmod((string) $foundFile, 0755);
             }
         }
+
+        // Change ownership to root
+        (new Process('chown root:root -R .', $directory))->run();
     }
 
     /**
