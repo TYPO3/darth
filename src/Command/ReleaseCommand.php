@@ -132,7 +132,7 @@ class ReleaseCommand extends Command
         $this->io->success('Release commit is ' . $localReleaseCommitHash . ' with message ' . "\n\n" . $commitMessage);
 
         if ($isInteractive) {
-            $answer = $this->io->confirm('Everything is set up locally, are you ready to push to remote?' . ($dryRun ? ' (don\' worry, you\'re in dry-run mode - nothing will happen)' : ''), true);
+            $answer = $this->io->confirm('Everything is set up locally, are you ready to push to remote?' . ($dryRun ? ' (don\'t worry, you\'re in dry-run mode - nothing will happen anyways)' : ''), true);
             if (!$answer) {
                 return 1;
             }
@@ -142,25 +142,25 @@ class ReleaseCommand extends Command
         $this->io->note('Pushing commit ' . $localReleaseCommitHash . ' to gerrit, and auto-approve this commit.');
         if (!$dryRun) {
             $this->gitHelper->pushAndApproveWithGerrit($remoteBranch . '/RELEASE', $localReleaseCommitHash);
+
+            // Commit is pushed, now wait until gerrit and the remote git repository are in sync again
+            $git->reset('--hard', $remoteBranchWithRemoteName); // now it should be back to $commitHashBeforeRelease
+            $git->pull();
+            $attempts = 0;
+            while ($this->gitHelper->getCurrentRevision() === $commitHashBeforeRelease) {
+                $git->pull();
+                $this->io->note('Waiting for remote git repository to be updated. Attempt #' . ($attempts+1));
+                sleep(10);
+                if (++$attempts > 60) {
+                    $this->io->error('We waited, but this infrastructure is too slow. So now you have to do the rest manually. '
+                        . 'This means: Run "git pull" in your working directory until you see the RELEASE commit, and get the SHA1 of that commit'
+                        . 'Afterwards, add a signed tag (v1.2.3, 1.2.3 and TYPO3_1-2-3) manually and do a `git push origin $tagName` for each tag.');
+
+                    return 1;
+                }
+            }
         } else {
             $this->io->comment('Skipped!');
-        }
-
-        // Commit is pushed, now wait until gerrit and the remote git repository are in sync again
-        $git->reset('--hard', $remoteBranchWithRemoteName); // now it should be back to $commitHashBeforeRelease
-        $git->pull();
-        $attempts = 0;
-        while ($this->gitHelper->getCurrentRevision() === $commitHashBeforeRelease) {
-            $git->pull();
-            $this->io->note('Waiting for remote git repository to be updated. Attempt # ' . $attempts);
-            sleep(10);
-            if (++$attempts > 60) {
-                $this->io->error('We waited, but this infrastructure is too slow. So now you have to do the rest manually. '
-                . 'This means: Run "git pull" in your working directory until you see the RELEASE commit, and get the SHA1 of that commit'
-                . 'Afterwards, add a signed tag (v1.2.3, 1.2.3 and TYPO3_1-2-3) manually and do a `git push origin $tagName` for each tag.');
-
-                return 1;
-            }
         }
 
         // add a "tag" to it and sign that one
