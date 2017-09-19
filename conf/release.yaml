@@ -53,7 +53,15 @@ updateFiles:
     # Escaped ' is done via ''
     pattern: '\''TYPO3_version\'',\s*\''([^\'']+)'
     type: "nextDevVersion"
-# todo do we need to touch composer.json files as well, once the versions/requirements are in there?
+  # ensure 8.7.5 is replaced by 8.7.6 in all composer.json files
+  -
+    file: "typo3/sysext/*/composer.json"
+    type: "nextBugfixVersion"
+  -
+    file: "typo3/sysext/*/ext_emconf.php"
+    type: "nextBugfixVersion"
+
+
 
 excludeFromPackaging:
   ".":

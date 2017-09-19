@@ -194,10 +194,10 @@ class ReleaseCommand extends Command
         // if it is a "9.0.1" release, it's gonna be "9.0.1-dev"
         $versionParts = explode('.', $nextVersion, 3);
         ++$versionParts[2];
-        $nextVersion = implode('.', $versionParts);
-        $this->updateFilesWithVersions($workingDirectory, $filesToManipulate, $nextVersion, true);
+        $upcomingVersion = implode('.', $versionParts);
+        $this->updateFilesWithVersions($workingDirectory, $filesToManipulate, $upcomingVersion, $nextVersion);
 
-        $commitMessage = '[TASK] Set TYPO3 version to ' . $nextVersion . '-dev';
+        $commitMessage = '[TASK] Set TYPO3 version to ' . $upcomingVersion . '-dev';
         $this->io->note('Committing ' . $commitMessage . ' with the latest updates to set the next version.');
         $git->commit('-a', '--allow-empty', '-m', $commitMessage);
 
@@ -219,9 +219,9 @@ class ReleaseCommand extends Command
      * @param string $workingDirectory
      * @param array  $configuration
      * @param string $nextVersion
-     * @param bool   $activateDev      whethere to also execute the "-dev" flag for replacements
+     * @param string $currentVersion      current version, used "-dev" flag for replacements
      */
-    protected function updateFilesWithVersions(string $workingDirectory, array $configuration, string $nextVersion, bool $activateDev = false)
+    protected function updateFilesWithVersions(string $workingDirectory, array $configuration, string $nextVersion, string $currentVersion = null)
     {
         $versionParts = explode('.', $nextVersion);
         $nextMinorVersion = $versionParts[0] . '.' . $versionParts[1];
@@ -238,6 +238,13 @@ class ReleaseCommand extends Command
                 $fileContents = $foundFile->getContents();
                 $updatedFileContents = $fileContents;
                 switch ($fileDetails['type']) {
+                    case 'nextBugfixVersion':
+                        if (!$currentVersion) {
+                            continue;
+                        }
+                        // just replace the just released version with the latest version
+                        $updatedFileContents = str_replace($currentVersion, $nextVersion, $fileContents);
+                        break;
                     case 'bugfixVersion':
                         // just replace it with the latest version
                         $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextVersion) {
@@ -245,10 +252,10 @@ class ReleaseCommand extends Command
                         }, $fileContents);
                         break;
                     case 'nextDevVersion':
-                        if (!$activateDev) {
+                        if (!$currentVersion) {
                             continue;
                         }
-                        // just replace it with the latest version
+                        // just replace the pattern with "1.2.3-dev"
                         $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextVersion) {
                             return str_replace($matches[1], $nextVersion . '-dev', $matches[0]);
                         }, $fileContents);
