@@ -80,6 +80,7 @@ class PublishCommand extends Command
             $this->io->note('Uploading to ' . $blobName);
             try {
                 $blobClient->createBlockBlob($containerName, $blobName, $content);
+                $this->io->success('Uploaded ' . basename((string)$file) . ' on ' . date('Y-m-d H:i:s'));
             } catch (ServiceException $e) {
                 // Error codes and messages are here:
                 // http://msdn.microsoft.com/library/azure/dd179439.aspx
