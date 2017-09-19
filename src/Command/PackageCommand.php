@@ -135,6 +135,11 @@ class PackageCommand extends Command
         ))->run();
         unlink($artefactsDirectory . '/README_unsigned.md');
 
+        // Legacy code
+        // Show MD5 hashes and SHA1 hashes
+        (new Process('md5 -r *.gz *.zip', $artefactsDirectory))->run();
+        (new Process('shasum  *.gz *.zip', $artefactsDirectory))->run();
+
         $this->io->success('All done. Just upload it now with the "publish" process.');
     }
 
