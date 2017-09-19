@@ -264,7 +264,7 @@ class PackageCommand extends Command
         }
 
         // Change ownership to root
-        (new Process('chown root:root -R .', $directory))->run();
+        (new Process('sudo chown root:root -R .', $directory))->run();
     }
 
     /**
