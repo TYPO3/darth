@@ -52,7 +52,6 @@ class InitializeCommand extends Command
     {
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('Housekeeping - Let\'s bring everything in order for release time.');
-        $this->gitHelper = new GitHelper($this->getApplication()->getWorkingDirectory(), $this->io->isVerbose());
 
         // Cleaning up GIT
         $this->io->section('Step 1: Git repository inside the working directory');
@@ -60,8 +59,6 @@ class InitializeCommand extends Command
         $this->io->note('Removing the existing working directory.');
         $workingDirectory = $this->getApplication()->getWorkingDirectory(true);
         $this->getApplication()->resetDirectory($workingDirectory);
-        // Completely remove the working directory and check out a clean new GIT repository
-        @rmdir($workingDirectory);
 
         // Clone the remote git repository
         $this->io->note('Re-creating the git repository via cloning from ' . getenv('GIT_REMOTE_REPOSITORY') . '. This might take a while.');
@@ -81,6 +78,7 @@ class InitializeCommand extends Command
         }
 
         // Check if the signing key is set
+        $this->gitHelper = new GitHelper($this->getApplication()->getWorkingDirectory(), $this->io->isVerbose());
         $this->gitHelper->initializeCleanWorkingCopy();
         $this->gitHelper->getSigningKey();
 
