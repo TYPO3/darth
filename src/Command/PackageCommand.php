@@ -182,7 +182,7 @@ class PackageCommand extends Command
         // Extract and remove the GIT archive
         (new Process(getenv('TAR_COMMAND') . ' xf ' . $archiveFile . ' && rm ' . $archiveFile, $sourceCodeDirectory))->run();
 
-        // Run "composer install"
+        // Run "composer install" - you have to do "COMPOSER_ROOT_VERSION=8.7.5" because we have a git archive, baby!
         $this->runComposerCommand($sourceCodeDirectory);
 
         // Remove the leftover files, and sets permissions
@@ -269,7 +269,7 @@ class PackageCommand extends Command
         }
 
         // Change ownership to root
-        (new Process('sudo chown root:root -R .', $directory))->run();
+        (new Process('sudo chown -R 0:0 .', $directory))->run();
     }
 
     /**
