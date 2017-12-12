@@ -126,7 +126,7 @@ class Application extends \Symfony\Component\Console\Application
     public function getArtefactsDirectory(string $version): string
     {
         $directory = $this->initializePublishDirectory(false) . '/' . ltrim($version, 'v') . '/' . getenv('ARTEFACTS_DIRECTORY');
-        if (!is_dir($directory)) {
+        if (!@is_dir($directory)) {
             mkdir($directory);
         }
 
@@ -141,8 +141,8 @@ class Application extends \Symfony\Component\Console\Application
     public function resetDirectory($directory)
     {
         // remove any old info
-        if (is_dir($directory)) {
-            (new Process('rm -rf ' . $directory))->run();
+        if (@is_dir($directory)) {
+            (new Process('sudo rm -rf ' . $directory))->run();
         }
         mkdir($directory);
     }
