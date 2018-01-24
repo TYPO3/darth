@@ -191,7 +191,7 @@ class ReleaseCommand extends Command
         }
 
         // now change the versions again, with the planned next version
-        // if it is a "9.0.1" release, it's gonna be "9.0.1-dev"
+        // if it is a "9.0.1" release, it's gonna be "9.0.2-dev"
         $versionParts = explode('.', $nextVersion, 3);
         ++$versionParts[2];
         $upcomingVersion = implode('.', $versionParts);
@@ -240,10 +240,12 @@ class ReleaseCommand extends Command
                 switch ($fileDetails['type']) {
                     case 'nextBugfixVersion':
                         if (!$currentVersion) {
-                            continue;
+                            continue 2;
                         }
                         // just replace the just released version with the latest version
-                        $updatedFileContents = str_replace($currentVersion, $nextVersion, $fileContents);
+                        $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextVersion) {
+                            return str_replace($matches[1], $nextVersion, $matches[0]);
+                        }, $fileContents);
                         break;
                     case 'bugfixVersion':
                         // just replace it with the latest version
@@ -253,25 +255,26 @@ class ReleaseCommand extends Command
                         break;
                     case 'nextDevVersion':
                         if (!$currentVersion) {
-                            continue;
+                            continue 2;
                         }
                         // just replace the pattern with "1.2.3-dev"
                         $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextVersion) {
                             return str_replace($matches[1], $nextVersion . '-dev', $matches[0]);
                         }, $fileContents);
                         break;
+                    case 'nextDevBranch':
+                        if (!$currentVersion) {
+                            continue 2;
+                        }
+                        // just replace the pattern with "1.2.*@dev"
+                        $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextMinorVersion) {
+                            return str_replace($matches[1], $nextMinorVersion . '.*@dev', $matches[0]);
+                        }, $fileContents);
+                        break;
                     case 'minorVersion':
                         // just replace it with the latest version
                         $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextMinorVersion) {
                             return str_replace($matches[1], $nextMinorVersion, $matches[0]);
-                        }, $fileContents);
-                        break;
-                    case 'bugfixRange':
-                        // used in ext_emconf.php
-                        $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($firstBugfixVersion, $nextVersion) {
-                            $result = str_replace($matches[1], $firstBugfixVersion, $matches[0]);
-
-                            return str_replace($matches[2], $nextVersion, $result);
                         }, $fileContents);
                         break;
                 }
