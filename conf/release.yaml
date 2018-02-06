@@ -10,55 +10,25 @@ updateFiles:
     type: "minorVersion"
   -
     file: "typo3/sysext/*/ext_emconf.php"
-    pattern: '\''version\''\s=>\s\''([^\'']+)'
+    pattern: '\''(?!.*?php).*\''\s=>\s\''([6-9]+\.[0-9]+\.[0-9]+\s*[\-]*\s*[6-9]*\.*[0-9]*\.*[0-9]*)'
     type: "bugfixVersion"
   -
-    file: "typo3/sysext/*/ext_emconf.php"
-    pattern: '\''typo3\''\s=>\s\''([0-9.]+)-([^\'']+)'
-    type: "bugfixRange"
-  -
-    file: "typo3/sysext/*/ext_emconf.php"
-    pattern: '\''frontend\''\s=>\s\''([0-9.]+)-([^\'']+)'
-    type: "bugfixRange"
-  -
-    file: "typo3/sysext/*/ext_emconf.php"
-    pattern: '\''backend\''\s=>\s\''([0-9.]+)-([^\'']+)'
-    type: "bugfixRange"
-  -
-    file: "typo3/sysext/*/ext_emconf.php"
-    pattern: '\''extbase\''\s=>\s\''([0-9.]+)-([^\'']+)'
-    type: "bugfixRange"
-  -
-    file: "typo3/sysext/*/ext_emconf.php"
-    pattern: '\''extensionmanager\''\s=>\s\''([0-9.]+)-([^\'']+)'
-    type: "bugfixRange"
-  -
-    file: "typo3/sysext/*/ext_emconf.php"
-    pattern: '\''func\''\s=>\s\''([0-9.]+)-([^\'']+)'
-    type: "bugfixRange"
-  -
-    file: "typo3/sysext/*/ext_emconf.php"
-    pattern: '\''info\''\s=>\s\''([0-9.]+)-([^\'']+)'
-    type: "bugfixRange"
-  -
-    file: "typo3/sysext/*/ext_emconf.php"
-    pattern: '\''taskcenter\''\s=>\s\''([0-9.]+)-([^\'']+)'
-    type: "bugfixRange"
-  -
-    file: "typo3/sysext/*/ext_emconf.php"
-    pattern: '\''sys_action\''\s=>\s\''([0-9.]+)-([^\'']+)'
-    type: "bugfixRange"
+    file: "typo3/sysext/*/composer.json"
+    pattern: '"typo3\/cms-[^"]+"\s*:\s*"([6-9]+\.[0-9]+\.\*@dev)'
+    type: "bugfixVersion"
   -
     file: "typo3/sysext/core/Classes/Core/SystemEnvironmentBuilder.php"
     # Escaped ' is done via ''
     pattern: '\''TYPO3_version\'',\s*\''([^\'']+)'
     type: "nextDevVersion"
-  # ensure 8.7.5 is replaced by 8.7.6 in all composer.json files
   -
     file: "typo3/sysext/*/composer.json"
-    type: "nextBugfixVersion"
+    pattern: '"typo3\/cms-[^"]+"\s*:\s*"([6-9]+\.[0-9]+\.[0-9]+)'
+    type: "nextDevBranch"
+  # ensure 8.7.5 is replaced by 8.7.6
   -
     file: "typo3/sysext/*/ext_emconf.php"
+    pattern: '\''(?!.*?php).*\''\s=>\s\''([6-9]+\.[0-9]+\.[0-9]+\s*[\-]*\s*[6-9]*\.*[0-9]*\.*[0-9]*)'
     type: "nextBugfixVersion"
 
 
