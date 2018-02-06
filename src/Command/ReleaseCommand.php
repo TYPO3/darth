@@ -57,6 +57,12 @@ class ReleaseCommand extends Command
                 'Additional commit message to [RELEASE] Release of TYPO3 x.y.z'
             )
             ->addOption(
+                'sprint-release',
+                null,
+                InputOption::VALUE_NONE,
+                'If this option is set, the version is considered as sprint release (e.g. 9.1.0)'
+            )
+            ->addOption(
                 'dry-run',
                 null,
                 InputOption::VALUE_NONE,
@@ -80,6 +86,7 @@ class ReleaseCommand extends Command
         $this->io->title('The day has come - it is release time! You have just pressed the button');
         $this->gitHelper = new GitHelper($this->getApplication()->getWorkingDirectory(), $this->io->isVerbose());
 
+        $sprintRelease = $input->hasOption('sprint-release') && $input->getOption('sprint-release') != false;
         $dryRun = $input->hasOption('dry-run') && $input->getOption('dry-run') != false;
         $isInteractive = $input->hasOption('interactive') && $input->getOption('interactive') != false;
         $givenVersion = $input->getArgument('version');
@@ -94,11 +101,13 @@ class ReleaseCommand extends Command
         $this->io->writeln('Detecting the version that should be released.');
         $nextVersion = $this->gitHelper->findNextVersion($givenVersion);
         $remoteBranchWithRemoteName = $this->gitHelper->findRemoteBranch($nextVersion);
+        $upcomingVersion = $this->determineUpcomingVersion($nextVersion, $sprintRelease);
 
         list(, $remoteBranch) = explode('/', $remoteBranchWithRemoteName);
         $this->io->note(
             'The next version will be ' . $nextVersion . "\n" .
-            'The branch to be used with is ' . $remoteBranchWithRemoteName
+            'The branch to be used with is ' . $remoteBranchWithRemoteName . "\n" .
+            'The upcoming version would be ' . $upcomingVersion
         );
 
         if ($isInteractive) {
@@ -191,10 +200,7 @@ class ReleaseCommand extends Command
         }
 
         // now change the versions again, with the planned next version
-        // if it is a "9.0.1" release, it's gonna be "9.0.1-dev"
-        $versionParts = explode('.', $nextVersion, 3);
-        ++$versionParts[2];
-        $upcomingVersion = implode('.', $versionParts);
+        // if it is a "9.0.1" release, it's gonna be "9.0.2-dev"
         $this->updateFilesWithVersions($workingDirectory, $filesToManipulate, $upcomingVersion, $nextVersion);
 
         $commitMessage = '[TASK] Set TYPO3 version to ' . $upcomingVersion . '-dev';
@@ -240,10 +246,12 @@ class ReleaseCommand extends Command
                 switch ($fileDetails['type']) {
                     case 'nextBugfixVersion':
                         if (!$currentVersion) {
-                            continue;
+                            continue 2;
                         }
                         // just replace the just released version with the latest version
-                        $updatedFileContents = str_replace($currentVersion, $nextVersion, $fileContents);
+                        $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextVersion) {
+                            return str_replace($matches[1], $nextVersion, $matches[0]);
+                        }, $fileContents);
                         break;
                     case 'bugfixVersion':
                         // just replace it with the latest version
@@ -253,25 +261,26 @@ class ReleaseCommand extends Command
                         break;
                     case 'nextDevVersion':
                         if (!$currentVersion) {
-                            continue;
+                            continue 2;
                         }
                         // just replace the pattern with "1.2.3-dev"
                         $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextVersion) {
                             return str_replace($matches[1], $nextVersion . '-dev', $matches[0]);
                         }, $fileContents);
                         break;
+                    case 'nextDevBranch':
+                        if (!$currentVersion) {
+                            continue 2;
+                        }
+                        // just replace the pattern with "1.2.*@dev"
+                        $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextMinorVersion) {
+                            return str_replace($matches[1], $nextMinorVersion . '.*@dev', $matches[0]);
+                        }, $fileContents);
+                        break;
                     case 'minorVersion':
                         // just replace it with the latest version
                         $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextMinorVersion) {
                             return str_replace($matches[1], $nextMinorVersion, $matches[0]);
-                        }, $fileContents);
-                        break;
-                    case 'bugfixRange':
-                        // used in ext_emconf.php
-                        $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($firstBugfixVersion, $nextVersion) {
-                            $result = str_replace($matches[1], $firstBugfixVersion, $matches[0]);
-
-                            return str_replace($matches[2], $nextVersion, $result);
                         }, $fileContents);
                         break;
                 }
@@ -284,6 +293,27 @@ class ReleaseCommand extends Command
                 }
             }
         }
+    }
+
+    /**
+     * Determines the upcoming version that would be used after the current release.
+     *
+     * @param string $nextVersion Version that is currently released
+     * @param bool $sprintRelease Whether the current version is a sprint release
+     * @return string
+     */
+    private function determineUpcomingVersion(string $nextVersion, bool $sprintRelease): string
+    {
+        $versionParts = explode('.', $nextVersion, 3);
+        // 9.1.0 -> 9.2.0
+        if ($sprintRelease) {
+            $versionParts[1]++;
+            $versionParts[2] = 0;
+        // 8.7.1 -> 8.7.2
+        } else {
+            $versionParts[2]++;
+        }
+        return implode('.', $versionParts);
     }
 
     /**
