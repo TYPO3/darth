@@ -16,5 +16,5 @@ For more information check out https://get.typo3.org/release-notes/{version}
 
 The following changes have been made since TYPO3 {previousVersion}:
 
-<f:for each="{changeLog}" as="entry"> * {entry}
+<f:for each="{changeLog}" as="entry"> * {entry -> f:format.raw()}
 </f:for>
