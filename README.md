@@ -43,6 +43,7 @@ All created files are put in the publish/[version]/artefacts folder.
             
         --type  Additional information if it is a snapshot release, security release. Will be added to README.md
 
+    ./bin/darth package 9.1.0 v9.1.0
 
 ### 4. Publish (Upload)
 
@@ -50,9 +51,11 @@ Uploads the files to a Azure blob storage container (the container must exist).
 
 All created files are put in the publish/[version]/artefacts folder.
 
-    ./bin/darth package [version]
+    ./bin/darth publish [version]
         
         --type  Additional information if it is a snapshot release, then adds a "snapshot" to the folder.
+
+    ./bin/darth publish 9.1.0
 
 ## Configuration
 
