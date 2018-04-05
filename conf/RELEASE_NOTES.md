@@ -23,7 +23,7 @@ This version is a bugfix and maintenance release.
 # Upgrade Instructions
 
 [/upgradeInstructions/] <>
-<f:if condition="{sprintRelease}=='sprint'"><f:then>
+<f:if condition="{sprintRelease}"><f:then>
 0. Before you update any instance to {version}, have a backup in place.
 0. Now download the new core and present it to your instance (by symlink or copied files)
 0. Use the install tool to run the upgrade wizards

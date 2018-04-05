@@ -24,6 +24,7 @@ use TYPO3\Darth\GitHelper;
 use TYPO3\Darth\Model\AnnounceApi\HashCollection;
 use TYPO3\Darth\Model\AnnounceApi\Release;
 use TYPO3\Darth\Model\AnnounceApi\ReleaseNotes;
+use TYPO3\Darth\Service\AnnounceApiService;
 use TYPO3\Darth\Service\FileHashService;
 use TYPO3\Darth\Service\VariableResolveService;
 use TYPO3Fluid\Fluid\View\TemplateView;
@@ -108,7 +109,7 @@ class AnnounceCommand extends Command
         $interactive = $input->hasOption('interactive') && $input->getOption('interactive') !== false;
         $configuration = $this->getConfiguration($version);
 
-        $announceApiService = new \TYPO3\Darth\Service\AnnounceApiService(
+        $announceApiService = new AnnounceApiService(
             new VariableResolveService(),
             $this->getAnnounceApiClient(),
             $configuration
