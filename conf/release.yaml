@@ -84,33 +84,3 @@ announce:
     setReleaseNotes:
       method: "PUT"
       uri: "/v1/api/release/{version}/release-notes"
-  models:
-    default:
-      release:
-        version: "{version}"
-        date: "{date}"
-        type: "{type}"
-        tar_package:
-          md5sum: "{hash.md5.tar}"
-          sha1sum: "{hash.sha1.tar}"
-          sha256sum: "{hash.sha256.tar}"
-        zip_package:
-          md5sum: "{hash.md5.zip}"
-          sha1sum: "{hash.sha1.zip}"
-          sha256sum: "{hash.sha256.zip}"
-      releaseNotes:
-        news_link: "{notes.link}"
-        news: "{notes.teaser}"
-        upgrading_instructions: "{notes.instructions}"
-        changes: "{notes.changes}"
-    ">=9.0.0":
-      release:
-        version: "{version}"
-        date: "{date}"
-        type: "{type}"
-        tar_package:
-          sha1sum: "{hash.sha1.tar}"
-          sha256sum: "{hash.sha256.tar}"
-        zip_package:
-          sha1sum: "{hash.sha1.zip}"
-          sha256sum: "{hash.sha256.zip}"
