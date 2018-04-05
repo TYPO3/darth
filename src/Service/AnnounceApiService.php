@@ -52,17 +52,35 @@ class AnnounceApiService
             $result = $this->request('getRelease', $variables);
         } catch (ClientException $exception) {
             return null;
+        } catch (GuzzleException $exception) {
+            throw new \RuntimeException(
+                sprintf(
+                    "API.getRelease failed due to:\n%s",
+                    $exception->getMessage()
+                ),
+                1522943643
+            );
         }
         return $this->buildRelease($result);
     }
 
     public function addRelease(Release $release)
     {
-        $this->request(
-            'addRelease',
-            ['version' => $release->getVersion()],
-            ['json' => $release]
-        );
+        try {
+            $this->request(
+                'addRelease',
+                ['version' => $release->getVersion()],
+                ['json' => $release]
+            );
+        } catch (GuzzleException $exception) {
+            throw new \RuntimeException(
+                sprintf(
+                    "API.addRelease failed due to:\n%s",
+                    $exception->getMessage()
+                ),
+                1522943644
+            );
+        }
         if (!empty($release->getReleaseNotes())) {
             $this->setReleaseNotes(
                 $release->getVersion(),
@@ -83,20 +101,40 @@ class AnnounceApiService
                 1522939959
             );
         }
-        $this->request(
-            'updateRelease',
-            ['version' => $version],
-            ['json' => $release]
-        );
+        try {
+            $this->request(
+                'updateRelease',
+                ['version' => $version],
+                ['json' => $release]
+            );
+        } catch (GuzzleException $exception) {
+            throw new \RuntimeException(
+                sprintf(
+                    "API.updateRelease failed due to:\n%s",
+                    $exception->getMessage()
+                ),
+                1522943645
+            );
+        }
     }
 
     public function setReleaseNotes(string $version, ReleaseNotes $releaseNotes)
     {
-        $this->request(
-            'setReleaseNotes',
-            ['version' => $version],
-            ['json' => $releaseNotes]
-        );
+        try {
+            $this->request(
+                'setReleaseNotes',
+                ['version' => $version],
+                ['json' => $releaseNotes]
+            );
+        } catch (GuzzleException $exception) {
+            throw new \RuntimeException(
+                sprintf(
+                    "API.setReleaseNotes failed due to:\n%s",
+                    $exception->getMessage()
+                ),
+                1522943646
+            );
+        }
     }
 
     private function substitute(string $path, array $variables = [])
@@ -125,6 +163,13 @@ class AnnounceApiService
         return $value;
     }
 
+    /**
+     * @param string $scope
+     * @param array $variables
+     * @param array $options
+     * @return array|null
+     * @throws GuzzleException
+     */
     private function request(string $scope, array $variables = [], array $options = [])
     {
         try {
