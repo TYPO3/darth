@@ -82,6 +82,31 @@ class Application extends \Symfony\Component\Console\Application
     }
 
     /**
+     * Checks for a properly configured announce/ directory, and if the environment variable is set
+     * Also checks if a .git folder exists within the working directory.
+     *
+     * @return string the name of the folder with no trailing slash
+     */
+    public function getAnnounceDirectory(): string
+    {
+        $announceDirectory = getenv('ANNOUNCE_DIRECTORY');
+        if (empty($announceDirectory)) {
+            throw new \RuntimeException('Could not find environment variable ANNOUNCE_DIRECTORY', 1522936006);
+        }
+        if (substr($announceDirectory, -1) === '/') {
+            throw new \RuntimeException('The environment variable ANNOUNCE_DIRECTORY must not end with a slash', 1522936007);
+        }
+
+        $announceDirectory = $this->getMainDirectory() . '/' . $announceDirectory;
+
+        if (!is_dir($announceDirectory) || !is_writable($announceDirectory)) {
+            throw new \RuntimeException('ANNOUNCE_DIRECTORY is not a writable directory', 1522936008);
+        }
+
+        return $announceDirectory;
+    }
+
+    /**
      * Initializes the publish/ directory where the artefacts are created later-on
      * Ensures that the folder exists as well.
      *
