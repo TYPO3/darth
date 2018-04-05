@@ -13,19 +13,19 @@ class ReleaseNotes implements \JsonSerializable
 {
     private $newsLink;
     private $news;
-    private $updateInstructions;
+    private $upgradingInstructions;
     private $changes;
 
     public function __construct(
         string $newsLink,
         string $news,
-        string $updateInstructions,
+        string $upgradingInstructions,
         string $changes
     )
     {
         $this->newsLink = $newsLink;
         $this->news = $news;
-        $this->updateInstructions = $updateInstructions;
+        $this->upgradingInstructions = $upgradingInstructions;
         $this->changes = $changes;
     }
 
@@ -34,7 +34,7 @@ class ReleaseNotes implements \JsonSerializable
         return [
             'news_link' => $this->newsLink,
             'news' => $this->news,
-            'update_instructions' => $this->updateInstructions,
+            'upgrading_instructions' => $this->upgradingInstructions,
             'changes' => $this->changes,
         ];
     }
@@ -58,9 +58,9 @@ class ReleaseNotes implements \JsonSerializable
     /**
      * @return string
      */
-    public function getUpdateInstructions(): string
+    public function getUpgradingInstructions(): string
     {
-        return $this->updateInstructions;
+        return $this->upgradingInstructions;
     }
 
     /**

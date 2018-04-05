@@ -81,12 +81,6 @@ class AnnounceApiService
                 1522943644
             );
         }
-        if (!empty($release->getReleaseNotes())) {
-            $this->setReleaseNotes(
-                $release->getVersion(),
-                $release->getReleaseNotes()
-            );
-        }
         $this->deleteReleaseCache($release->getVersion());
     }
 
@@ -237,7 +231,7 @@ class AnnounceApiService
         return new ReleaseNotes(
             $json['news_link'],
             $json['news'],
-            $json['upgrade_instructions'],
+            $json['upgrading_instructions'],
             $json['changes']
         );
     }

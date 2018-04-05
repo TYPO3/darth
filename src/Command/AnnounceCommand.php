@@ -49,7 +49,7 @@ class AnnounceCommand extends Command
      */
     public function configure()
     {
-        $this->setDescription('This command announces (or updates) are release to get.typo3.org')
+        $this->setDescription('This command announces (or updates) a release to get.typo3.org')
             ->addArgument(
                 'version',
                 InputArgument::REQUIRED,
@@ -59,6 +59,11 @@ class AnnounceCommand extends Command
                 'news-link',
                 InputArgument::REQUIRED,
                 'Link to the news article'
+            )
+            ->addArgument(
+                'revision',
+                InputArgument::OPTIONAL,
+                'The Git tag to use'
             )
             ->addOption(
                 'type',
@@ -102,6 +107,7 @@ class AnnounceCommand extends Command
         );
 
         $version = $input->getArgument('version');
+        $revision = $input->getArgument('revision') ?: 'v' . $version;
         $newsLink = $input->getArgument('news-link');
         $releaseType = $input->getOption('type');
         $sprintRelease = $input->hasOption('sprint-release') && $input->getOption('sprint-release') !== false;
@@ -141,9 +147,8 @@ class AnnounceCommand extends Command
             ['tar_package' => '*.tar.gz', 'zip_package' => '*.zip']
         );
 
-        $this->gitHelper->initializeCleanWorkingCopy($version);
+        $this->gitHelper->initializeCleanWorkingCopy($revision);
         $changes = $this->gitHelper->getChangeLogUntilPreviousTag();
-
 
         $releaseNotesPath = $this->getReleaseNotesPath($version);
         $this->createReleaseNotesFile(
@@ -244,7 +249,7 @@ class AnnounceCommand extends Command
         return new ReleaseNotes(
             $data['newsLink'],
             $data['news'],
-            $data['upgradeInstructions'],
+            $data['upgradingInstructions'],
             $data['changes']
         );
     }
@@ -286,10 +291,16 @@ class AnnounceCommand extends Command
     private function getConfiguration(string $version)
     {
         $configuration = $this->getApplication()->getConfiguration('announce');
-        $configuration = $this->inferenceVersionConstraint($version, $configuration, 'models');
         return $configuration;
     }
 
+    /**
+     * @param string $version
+     * @param array $configuration
+     * @param string $path
+     * @return array
+     * @deprecated Not used anymore
+     */
     private function inferenceVersionConstraint(string $version, array $configuration, string $path)
     {
         $subjectReference = &$this->referencePath($configuration, $path);

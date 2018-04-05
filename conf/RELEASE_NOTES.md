@@ -22,7 +22,7 @@ This version is a bugfix and maintenance release.
 
 # Upgrade Instructions
 
-[/upgradeInstructions/] <>
+[/upgradingInstructions/] <>
 <f:if condition="{sprintRelease}"><f:then>
 0. Before you update any instance to {version}, have a backup in place.
 0. Now download the new core and present it to your instance (by symlink or copied files)
@@ -35,7 +35,7 @@ applies. No database updates are necessary.  It might be required to clear all c
 the "important actions" section in the TYPO3 Install Tool offers the accordant possibility
 to do so.
 </f:else></f:if>
-[/upgradeInstructions/] <>
+[/upgradingInstructions/] <>
 
 # Changes
 
