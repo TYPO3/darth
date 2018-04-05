@@ -84,3 +84,6 @@ announce:
     setReleaseNotes:
       method: "PUT"
       uri: "/v1/api/release/{version}/release-notes"
+    deleteReleaseCache:
+      method: "DELETE"
+      uri: "/v1/api/cache/release/{version}"

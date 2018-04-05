@@ -87,6 +87,7 @@ class AnnounceApiService
                 $release->getReleaseNotes()
             );
         }
+        $this->deleteReleaseCache($release->getVersion());
     }
 
     public function updateRelease(string $version, Release $release)
@@ -116,6 +117,7 @@ class AnnounceApiService
                 1522943645
             );
         }
+        $this->deleteReleaseCache($release->getVersion());
     }
 
     public function setReleaseNotes(string $version, ReleaseNotes $releaseNotes)
@@ -133,6 +135,22 @@ class AnnounceApiService
                     $exception->getMessage()
                 ),
                 1522943646
+            );
+        }
+    }
+
+    public function deleteReleaseCache(string $version)
+    {
+        try {
+            $variables = ['version' => $version];
+            $result = $this->request('deleteReleaseCache', $variables);
+        } catch (GuzzleException $exception) {
+            throw new \RuntimeException(
+                sprintf(
+                    "API.deleteReleaseCache failed due to:\n%s",
+                    $exception->getMessage()
+                ),
+                1522943647
             );
         }
     }
