@@ -171,9 +171,18 @@ class GitHelper
      */
     public function getChangeLogUntilPreviousTag(): array
     {
+        $options = [
+            'oneline' => true,
+            'date' => 'short',
+        ];
+        $pretty = getenv('GIT_CHANGELOG_PRETTY');
+        if (!empty($pretty)) {
+            $options['pretty'] = $pretty;
+        }
+
         $previousTag = $this->getPreviousTagName();
         $this->git->clearOutput();
-        $this->git->log('--oneline', $previousTag . '..HEAD');
+        $this->git->log($previousTag . '..HEAD', $options);
         $changeLog = $this->git->getOutput();
 
         return explode("\n", trim($changeLog));
