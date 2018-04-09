@@ -266,7 +266,7 @@ class AnnounceCommand extends Command
         if ($output === '') {
             $output = $process->getErrorOutput();
         }
-        if (preg_match('#^gpg:.*(\b[a-z]{3}\s[a-z]{3}\s\d{2}\s\d{2}\:\d{2}\:\d{2}\s\d{4}\s[a-z]+\b).*$#mis', $output, $matches)) {
+        if (preg_match('#^gpg:.*(\b[a-z]{3}\s[a-z]{3}\s(\s*\d|\d{2})\s\d{2}\:\d{2}\:\d{2}\s\d{4}\s[a-z]+\b).*$#mis', $output, $matches)) {
             return new \DateTime($matches[1]);
         }
         return null;
