@@ -155,6 +155,7 @@ class AnnounceCommand extends Command
             $releaseNotesPath,
             [
                 'version' => $version,
+                'minorVersion' => preg_replace('#^(\d+\.\d+).*$#', '$1', $version),
                 'newsLink' => $newsLink,
                 'releaseType' => $releaseType,
                 'sprintRelease' => $sprintRelease,

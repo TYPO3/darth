@@ -67,6 +67,7 @@ release packages in `publish/[version]/artefacts`.
     
         --sprint-release Whether current release is a sprint release
         --force Whether to override existing information on get.typo3.org
+        --interactive Whether to pause execution in order to adjust release notes manually
     
     ./bin/darth announce 9.2.0 https://new.typo3.org/article/typo3-v920-released/ --sprint-release
     ./bin/darth announce 8.7.12 https://new.typo3.org/article/typo3-8712-and-7626-released/
