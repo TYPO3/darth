@@ -24,11 +24,11 @@ This version is a bugfix and maintenance release.
 
 [/upgradingInstructions/] <>
 <f:if condition="{sprintRelease}"><f:then>
-0. Before you update any instance to {version}, have a backup in place.
-0. Now download the new core and present it to your instance (by symlink or copied files)
-0. Use the install tool to run the upgrade wizards
-0. Use the install tool to clear each and every cache you can find, even opcode.
-0. When you encounter compatibility problems with your extensions, look for the Git versions around in order to find one already upgraded.
+1. Before you update any instance to {version}, have a backup in place.
+1. Now download the new core and present it to your instance (by symlink or copied files)
+1. Use the install tool to run the upgrade wizards
+1. Use the install tool to clear each and every cache you can find, even opcode.
+1. When you encounter compatibility problems with your extensions, look for the Git versions around in order to find one already upgraded.
 </f:then><f:else>
 The usual [upgrading procedure](https://docs.typo3.org/typo3cms/InstallationGuide/)
 applies. No database updates are necessary.  It might be required to clear all caches;
