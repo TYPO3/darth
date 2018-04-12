@@ -41,13 +41,16 @@ to do so.
 
 [/changes/] <>
 <f:if condition="{sprintRelease}">
-* [{minorVersion} ChangeLog](https://docs.typo3.org/typo3cms/extensions/core/Changelog/{minorVersion}/Index.html)
-    + [Features](https://docs.typo3.org/typo3cms/extensions/core/Changelog/{minorVersion}/Index.html#features)
-    + [Important Changes](https://docs.typo3.org/typo3cms/extensions/core/Changelog/{minorVersion}/Index.html#important)
-    + [Breaking Changes](https://docs.typo3.org/typo3cms/extensions/core/Changelog/{minorVersion}/Index.html#breaking-changes)
-    + [Deprecation Changes](https://docs.typo3.org/typo3cms/extensions/core/Changelog/{minorVersion}/Index.html#deprecation)
+-   [{version.asMinor} ChangeLog](https://docs.typo3.org/typo3cms/extensions/core/Changelog/{version.asMinor}/Index.html)
+    -   [Features](https://docs.typo3.org/typo3cms/extensions/core/Changelog/{version.asMinor}/Index.html#features)
+    -   [Important Changes](https://docs.typo3.org/typo3cms/extensions/core/Changelog/{version.asMinor}/Index.html#important)
+    -   [Breaking Changes](https://docs.typo3.org/typo3cms/extensions/core/Changelog/{version.asMinor}/Index.html#breaking-changes)
+    -   [Deprecation Changes](https://docs.typo3.org/typo3cms/extensions/core/Changelog/{version.asMinor}/Index.html#deprecation)
 
 </f:if>
+Here is a list of what was fixed since
+[{previousVersion}](TYPO3_CMS_{previousVersion} "wikilink"):
+
 <f:for each="{changes}" as="entry"> * {entry -> f:format.raw()}
 </f:for>
 [/changes/] <>

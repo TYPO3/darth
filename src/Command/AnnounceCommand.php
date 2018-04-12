@@ -24,6 +24,7 @@ use TYPO3\Darth\GitHelper;
 use TYPO3\Darth\Model\AnnounceApi\HashCollection;
 use TYPO3\Darth\Model\AnnounceApi\Release;
 use TYPO3\Darth\Model\AnnounceApi\ReleaseNotes;
+use TYPO3\Darth\Model\Version;
 use TYPO3\Darth\Service\AnnounceApiService;
 use TYPO3\Darth\Service\FileHashService;
 use TYPO3\Darth\Service\VariableResolveService;
@@ -114,6 +115,7 @@ class AnnounceCommand extends Command
         $force = $input->hasOption('force') && $input->getOption('force') !== false;
         $interactive = $input->hasOption('interactive') && $input->getOption('interactive') !== false;
         $configuration = $this->getConfiguration();
+        $versionObject = new Version($version);
 
         $announceApiService = new AnnounceApiService(
             new VariableResolveService(),
@@ -148,14 +150,16 @@ class AnnounceCommand extends Command
         );
 
         $this->gitHelper->initializeCleanWorkingCopy($revision);
-        $changes = $this->gitHelper->getChangeLogUntilPreviousTag();
+        $previousTag = $this->gitHelper->getPreviousTagName();
+        $previousVersionObject = new Version($previousTag);
+        $changes = $this->gitHelper->getChangeLogUntilPreviousTag($previousTag);
 
         $releaseNotesPath = $this->getReleaseNotesPath($version);
         $this->createReleaseNotesFile(
             $releaseNotesPath,
             [
-                'version' => $version,
-                'minorVersion' => preg_replace('#^(\d+\.\d+).*$#', '$1', $version),
+                'version' => $versionObject,
+                'previousVersion' => $previousVersionObject,
                 'newsLink' => $newsLink,
                 'releaseType' => $releaseType,
                 'sprintRelease' => $sprintRelease,
