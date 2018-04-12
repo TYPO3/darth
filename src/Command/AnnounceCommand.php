@@ -100,7 +100,7 @@ class AnnounceCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $this->io = new SymfonyStyle($input, $output);
-        $this->io->title('Announce release to get.typo3.org');
+        $this->io->title('Announce release to ' . getenv('ANNOUNCE_API_BASE_URL'));
         $this->gitHelper = new GitHelper(
             $this->getApplication()->getWorkingDirectory(),
             $this->io->isVerbose()
@@ -113,7 +113,7 @@ class AnnounceCommand extends Command
         $sprintRelease = $input->hasOption('sprint-release') && $input->getOption('sprint-release') !== false;
         $force = $input->hasOption('force') && $input->getOption('force') !== false;
         $interactive = $input->hasOption('interactive') && $input->getOption('interactive') !== false;
-        $configuration = $this->getConfiguration($version);
+        $configuration = $this->getConfiguration();
 
         $announceApiService = new AnnounceApiService(
             new VariableResolveService(),
@@ -289,7 +289,7 @@ class AnnounceCommand extends Command
         return new Client($settings);
     }
 
-    private function getConfiguration(string $version)
+    private function getConfiguration()
     {
         $configuration = $this->getApplication()->getConfiguration('announce');
         return $configuration;
