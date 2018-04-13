@@ -27,6 +27,16 @@ updateFiles:
     type: "nextDevBranch"
   # ensure 8.7.5 is replaced by 8.7.6
   -
+    file: "typo3/sysext/*/composer.json"
+    pattern: '"dev-master": "(\d+\.\d+\.x-dev)"'
+    type: "nextDevBranchAlias"
+  # ensure 9.2.x-dev is replaced by 9.3.x-dev
+  -
+    file: "composer.json"
+    pattern: '"dev-master": "(\d+\.\d+\.x-dev)"'
+    type: "nextDevBranchAlias"
+  # ensure 9.2.x-dev is replaced by 9.3.x-dev
+  -
     file: "typo3/sysext/*/ext_emconf.php"
     pattern: '\''(?!.*?php).*\''\s=>\s\''([6-9]+\.[0-9]+\.[0-9]+\s*[\-]*\s*[6-9]*\.*[0-9]*\.*[0-9]*)'
     type: "nextBugfixVersion"
@@ -69,3 +79,21 @@ executableFilesInPackage:
   - "*.sh"
   - "*.pl"
   - "typo3/sysext/core/bin/typo3"
+
+announce:
+  endpoints:
+    getRelease:
+      method: "GET"
+      uri: "/v1/api/release/{version}"
+    addRelease:
+      method: "POST"
+      uri: "/v1/api/release/"
+    updateRelease:
+      method: "PATCH"
+      uri: "/v1/api/release/{version}"
+    setReleaseNotes:
+      method: "PUT"
+      uri: "/v1/api/release/{version}/release-notes"
+    deleteReleaseCache:
+      method: "DELETE"
+      uri: "/v1/api/cache/release/{version}"

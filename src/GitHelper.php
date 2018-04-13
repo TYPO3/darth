@@ -167,13 +167,26 @@ class GitHelper
     /**
      * Returns all commit log entries (as --oneline) from the current head to the previous tag found before HEAD.
      *
+     * @param string $previousTag
      * @return array each change log entry in one part of the array
      */
-    public function getChangeLogUntilPreviousTag(): array
+    public function getChangeLogUntilPreviousTag(string $previousTag = null): array
     {
-        $previousTag = $this->getPreviousTagName();
+        if ($previousTag === null) {
+            $previousTag = $this->getPreviousTagName();
+        }
+
+        $options = [
+            'oneline' => true,
+            'date' => 'short',
+        ];
+        $pretty = getenv('GIT_CHANGELOG_PRETTY');
+        if (!empty($pretty)) {
+            $options['pretty'] = $pretty;
+        }
+
         $this->git->clearOutput();
-        $this->git->log('--oneline', $previousTag . '..HEAD');
+        $this->git->log($previousTag . '..HEAD', $options);
         $changeLog = $this->git->getOutput();
 
         return explode("\n", trim($changeLog));

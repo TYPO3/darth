@@ -22,6 +22,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 use TYPO3\Darth\Application;
 use TYPO3\Darth\GitHelper;
+use TYPO3\Darth\Service\FileHashService;
 use TYPO3Fluid\Fluid\View\TemplateView;
 
 /**
@@ -294,11 +295,10 @@ class PackageCommand extends Command
 
         // create checksums
         $this->io->note('Generating SHA256 checksums for artefacts.');
+        $fileHashService = new FileHashService(['sha' => getenv('CHECKSUM_SHA_COMMAND')], $artefactDirectory);
         $checksums = [];
         foreach ($artefacts as $fileName) {
-            $process = new Process(sprintf(getenv('CHECKSUM_SHA_COMMAND'), $fileName), $artefactDirectory);
-            $process->run();
-            $checksums[$fileName] = trim(trim($process->getOutput()), '- ');
+            $checksums[$fileName] = $fileHashService->execute('sha256', $fileName);
         }
 
         // sign everything

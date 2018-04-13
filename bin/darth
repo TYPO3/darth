@@ -20,6 +20,7 @@ require __DIR__ . '/../vendor/autoload.php';
   $application->add(new \TYPO3\Darth\Command\ReleaseCommand('release'));
   $application->add(new \TYPO3\Darth\Command\PackageCommand('package'));
   $application->add(new \TYPO3\Darth\Command\PublishCommand('publish'));
+  $application->add(new \TYPO3\Darth\Command\AnnounceCommand('announce'));
 
   $application->run();
 });

@@ -18,6 +18,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\Process;
 use TYPO3\Darth\Application;
 use TYPO3\Darth\GitHelper;
 
@@ -128,7 +129,7 @@ class ReleaseCommand extends Command
 
         $filesToManipulate = $this->getApplication()->getConfiguration('updateFiles');
         if (is_array($filesToManipulate)) {
-            $this->updateFilesWithVersions($workingDirectory, $filesToManipulate, $nextVersion);
+            $this->updateFilesWithVersions($workingDirectory, $filesToManipulate, $sprintRelease, $nextVersion);
         }
 
         // Now commit with "[RELEASE] Released TYPO3 v.x.x"
@@ -201,7 +202,15 @@ class ReleaseCommand extends Command
 
         // now change the versions again, with the planned next version
         // if it is a "9.0.1" release, it's gonna be "9.0.2-dev"
-        $this->updateFilesWithVersions($workingDirectory, $filesToManipulate, $upcomingVersion, $nextVersion);
+        $this->updateFilesWithVersions($workingDirectory, $filesToManipulate, $sprintRelease, $upcomingVersion, $nextVersion);
+
+        if ($sprintRelease) {
+            $this->io->note('Update composer.lock file');
+            (new Process(
+                'composer update --lock',
+                $this->getApplication()->getWorkingDirectory()
+            ))->run();
+        }
 
         $commitMessage = '[TASK] Set TYPO3 version to ' . $upcomingVersion . '-dev';
         $this->io->note('Committing ' . $commitMessage . ' with the latest updates to set the next version.');
@@ -224,10 +233,11 @@ class ReleaseCommand extends Command
      *
      * @param string $workingDirectory
      * @param array  $configuration
+     * @param bool $sprintRelease
      * @param string $nextVersion
      * @param string $currentVersion      current version, used "-dev" flag for replacements
      */
-    protected function updateFilesWithVersions(string $workingDirectory, array $configuration, string $nextVersion, string $currentVersion = null)
+    protected function updateFilesWithVersions(string $workingDirectory, array $configuration, bool $sprintRelease, string $nextVersion, string $currentVersion = null)
     {
         $versionParts = explode('.', $nextVersion);
         $nextMinorVersion = $versionParts[0] . '.' . $versionParts[1];
@@ -275,6 +285,15 @@ class ReleaseCommand extends Command
                         // just replace the pattern with "1.2.*@dev"
                         $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextMinorVersion) {
                             return str_replace($matches[1], $nextMinorVersion . '.*@dev', $matches[0]);
+                        }, $fileContents);
+                        break;
+                    case 'nextDevBranchAlias':
+                        if (!$currentVersion || !$sprintRelease) {
+                            continue 2;
+                        }
+                        // just replace the pattern with "1.2.x-dev"
+                        $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextMinorVersion) {
+                            return str_replace($matches[1], $nextMinorVersion . '.x-dev', $matches[0]);
                         }, $fileContents);
                         break;
                     case 'minorVersion':

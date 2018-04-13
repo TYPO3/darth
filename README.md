@@ -57,6 +57,21 @@ All created files are put in the publish/[version]/artefacts folder.
 
     ./bin/darth publish 9.1.0
 
+### 5. Announce (to get.typo3.org)
+
+Uses the REST API to announce download packages, checksums, news link and
+release note text to get.typo3.org. Checksums are recalculated from local
+release packages in `publish/[version]/artefacts`.
+
+    ./bin/darth announce [version] [news-link]
+    
+        --sprint-release Whether current release is a sprint release
+        --force Whether to override existing information on get.typo3.org
+        --interactive Whether to pause execution in order to adjust release notes manually
+    
+    ./bin/darth announce 9.2.0 https://new.typo3.org/article/typo3-v920-released/ --sprint-release
+    ./bin/darth announce 8.7.12 https://new.typo3.org/article/typo3-8712-and-7626-released/
+
 ## Configuration
 
 See .env.dist which sets most configuration options already, however, the remote connection string for uploading
