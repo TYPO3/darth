@@ -80,11 +80,11 @@ class Version implements \JsonSerializable
 
     public function decrement(string $position = self::PATCH): Version
     {
-        if ($this->minor === 0) {
+        $this->assertPosition($position);
+        if ($this->{$position} === 0) {
             throw new \RuntimeException('Cannot decrement', 1523540616);
         }
 
-        $this->assertPosition($position);
         $major = $this->major;
         $minor = $this->minor;
         $patch = $this->patch;
