@@ -158,7 +158,7 @@ class GitHelper
     public function getPreviousTagName(): string
     {
         $this->git->clearOutput();
-        $this->git->run(['describe', '--abbrev=0', 'HEAD^']);
+        $this->git->run(['describe', '--abbrev=0', '--match=*.*.*', 'HEAD^']);
         $previousTag = $this->git->getOutput();
 
         return trim($previousTag);
