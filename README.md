@@ -72,6 +72,16 @@ release packages in `publish/[version]/artefacts`.
     ./bin/darth announce 9.2.0 https://new.typo3.org/article/typo3-v920-released/ --sprint-release
     ./bin/darth announce 8.7.12 https://new.typo3.org/article/typo3-8712-and-7626-released/
 
+### 6. Security Advistories (to https://github.com/FriendsOfPHP/security-advisories)
+
+In case the current release contains security fixes, these have to be prepared and announced
+for https://github.com/FriendsOfPHP/security-advisories. The workflow is the following:
+
+    ./bin/darth security [versions separated by comma]
+    ./bin/darth security 9.5.2,8.7.21,7.6.32
+
+Then merge generated files in `security/` directorty manually to `sensiolabs/security-advisories` package.
+
 ## Configuration
 
 See .env.dist which sets most configuration options already, however, the remote connection string for uploading
