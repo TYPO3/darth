@@ -111,7 +111,7 @@ class SecurityCommand extends Command
                 $fileName = sprintf('%s/%s-%d.yaml', $path, $date, $dates[$date]);
                 file_put_contents(
                     $fileName,
-                    Yaml::dump($payload, Yaml::DUMP_OBJECT_AS_MAP)
+                    Yaml::dump($payload, 3, 4)
                 );
                 $this->io->writeln('Created ' . $fileName);
             }
