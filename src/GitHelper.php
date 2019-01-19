@@ -22,6 +22,11 @@ use Symfony\Component\Process\Process;
  */
 class GitHelper
 {
+    const LOG_DELIMITER_FIELD = '%x00%x00,%x00%x00';
+    const LOG_DELIMITER_ITEM = '%x00%x00---%x00%x00';
+    const PHP_DELIMITER_FIELD = "\x00\x00,\x00\x00";
+    const PHP_DELIMITER_ITEM = "\x00\x00---\x00\x00";
+
     /**
      * The absolute path to the local GIT repository.
      *
@@ -190,6 +195,56 @@ class GitHelper
         $changeLog = $this->git->getOutput();
 
         return explode("\n", trim($changeLog));
+    }
+
+    /**
+     * Solves Git changes (containing some optional information as given in $grep).
+     * Each of the result items contains subject, body and date.
+     *
+     * @param string|null $previousTag
+     * @param string|null $grep
+     * @return array
+     */
+    public function getChangeItemsUntilPreviousTag(string $previousTag = null, string $grep = null): array
+    {
+        if ($previousTag === null) {
+            $previousTag = $this->getPreviousTagName();
+        }
+
+        $options = [
+            'pretty' => '%s' . self::LOG_DELIMITER_FIELD
+                . '%b' . self::LOG_DELIMITER_FIELD
+                . '%ci' . self::LOG_DELIMITER_FIELD
+                . '///' . self::LOG_DELIMITER_ITEM,
+        ];
+        if ($grep !== null) {
+            $options['grep'] = $grep;
+        }
+
+        $this->git->clearOutput();
+        $this->git->log($previousTag . '..HEAD', $options);
+        $items = array_filter(
+            array_map(
+                'trim',
+                explode(self::PHP_DELIMITER_ITEM, $this->git->getOutput())
+            )
+        );
+
+        $items = array_map(
+            function (string $item) {
+                $fields = array_filter(
+                    explode(self::PHP_DELIMITER_FIELD, $item)
+                );
+                return [
+                    'subject' => $fields[0],
+                    'body' => $fields[1],
+                    'date' => $fields[2],
+                ];
+            },
+            $items
+        );
+
+        return $items;
     }
 
     /**

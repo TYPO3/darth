@@ -107,6 +107,34 @@ class Application extends \Symfony\Component\Console\Application
     }
 
     /**
+     * Checks for a properly configured security/ directory, and if the environment variable is set
+     * Also checks if a .git folder exists within the working directory.
+     *
+     * @return string the name of the folder with no trailing slash
+     */
+    public function getSecurityDirectory(): string
+    {
+        $securityDirectory = getenv('SECURITY_DIRECTORY');
+        if (empty($securityDirectory)) {
+            throw new \RuntimeException('Could not find environment variable SECURITY_DIRECTORY', 1522936016);
+        }
+        if (substr($securityDirectory, -1) === '/') {
+            throw new \RuntimeException('The environment variable SECURITY_DIRECTORY must not end with a slash', 1522936017);
+        }
+
+        $securityDirectory = $this->getMainDirectory() . '/' . $securityDirectory;
+
+        if (!file_exists($securityDirectory)) {
+            mkdir($securityDirectory, 0755, true);
+        }
+        if (!is_writable($securityDirectory)) {
+            throw new \RuntimeException('SECURITY_DIRECTORY is not a writable directory', 1522936018);
+        }
+
+        return $securityDirectory;
+    }
+
+    /**
      * Initializes the publish/ directory where the artefacts are created later-on
      * Ensures that the folder exists as well.
      *
