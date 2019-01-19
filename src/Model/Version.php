@@ -31,6 +31,9 @@ class Version implements \JsonSerializable
      */
     private $patch;
 
+    /**
+     * @param string $version
+     */
     public function __construct(string $version)
     {
         if (!preg_match(static::PATTERN, $version, $matches)) {
@@ -50,21 +53,34 @@ class Version implements \JsonSerializable
         return $this->export($this->major, $this->minor, $this->patch);
     }
 
+    /**
+     * @return mixed|string
+     */
     public function jsonSerialize()
     {
         return (string)$this;
     }
 
+    /**
+     * @return string
+     */
     public function getAsMajor(): string
     {
         return $this->export($this->major);
     }
 
+    /**
+     * @return string
+     */
     public function getAsMinor(): string
     {
         return $this->export($this->major, $this->minor);
     }
 
+    /**
+     * @param string $position
+     * @return Version
+     */
     public function increment(string $position = self::PATCH): Version
     {
         $this->assertPosition($position);
@@ -78,6 +94,10 @@ class Version implements \JsonSerializable
         );
     }
 
+    /**
+     * @param string $position
+     * @return Version
+     */
     public function decrement(string $position = self::PATCH): Version
     {
         $this->assertPosition($position);
@@ -95,6 +115,9 @@ class Version implements \JsonSerializable
         );
     }
 
+    /**
+     * @param string $position
+     */
     private function assertPosition(string $position)
     {
         if (!in_array($position, [static::MAJOR, static::MINOR, static::PATCH])) {
@@ -102,6 +125,10 @@ class Version implements \JsonSerializable
         }
     }
 
+    /**
+     * @param int ...$parts
+     * @return string
+     */
     private function export(int ...$parts): string
     {
         return implode('.', $parts);

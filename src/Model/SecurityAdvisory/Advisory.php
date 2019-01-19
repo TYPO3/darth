@@ -31,6 +31,11 @@ class Advisory
      */
     private $branches = [];
 
+    /**
+     * @param string $advisory
+     * @param string $title
+     * @param string $link
+     */
     public function __construct(
         string $advisory,
         string $title,
@@ -79,6 +84,9 @@ class Advisory
         )[0];
     }
 
+    /**
+     * @param Branch $branch
+     */
     public function addBranch(Branch $branch)
     {
         if (isset($this->branches[$branch->getName()])) {

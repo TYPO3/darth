@@ -33,6 +33,10 @@ class Branch
      */
     private $versions;
 
+    /**
+     * @param \DateTimeInterface $time
+     * @param Version $version
+     */
     public function __construct(
         \DateTimeInterface $time,
         Version $version

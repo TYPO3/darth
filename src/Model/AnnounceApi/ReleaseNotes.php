@@ -29,6 +29,9 @@ class ReleaseNotes implements \JsonSerializable
         $this->changes = $changes;
     }
 
+    /**
+     * @return array
+     */
     public function jsonSerialize(): array
     {
         return [

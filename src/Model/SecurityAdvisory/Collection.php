@@ -24,6 +24,9 @@ class Collection
         return $this->advisories;
     }
 
+    /**
+     * @param Advisory $advisory
+     */
     public function addAdvisory(Advisory $advisory)
     {
         if ($this->has($advisory->getAdvisoryId())) {

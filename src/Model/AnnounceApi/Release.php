@@ -58,6 +58,9 @@ class Release implements \JsonSerializable
         $this->releaseNotes = $releaseNotes;
     }
 
+    /**
+     * @return array
+     */
     public function jsonSerialize(): array
     {
         $result = [

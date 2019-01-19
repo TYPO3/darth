@@ -17,6 +17,9 @@ class HashCollection extends \ArrayObject implements \JsonSerializable
         'sha256sum' => 64,
     ];
 
+    /**
+     * @param array $hashes
+     */
     public function __construct(array $hashes)
     {
         $hashes = array_intersect_key(
@@ -47,6 +50,9 @@ class HashCollection extends \ArrayObject implements \JsonSerializable
         parent::__construct($hashes);
     }
 
+    /**
+     * @return array
+     */
     public function jsonSerialize(): array
     {
         return $this->getArrayCopy();
