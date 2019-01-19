@@ -55,7 +55,6 @@ class Advisory
     public function export(array $additional = [], array $callbacks = []): array
     {
         return array_merge(
-            $additional[Advisory::class] ?? [],
             [
                 'title' => $this->title,
                 'link' => $this->link,
@@ -67,7 +66,8 @@ class Advisory
                         $this->branches
                     )
                 ),
-            ]
+            ],
+            $additional[Advisory::class] ?? []
         );
     }
 

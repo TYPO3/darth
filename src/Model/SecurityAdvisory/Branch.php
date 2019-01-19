@@ -70,11 +70,11 @@ class Branch
         }
 
         return array_merge(
-            $additional[Branch::class] ?? [],
             [
                 'time' => $branch->time->format('Y-m-d H:i:s'),
                 'versions' => $branch->versions,
-            ]
+            ],
+            $additional[Branch::class] ?? []
         );
     }
 
