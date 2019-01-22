@@ -78,6 +78,7 @@ class SecurityCommand extends Command
         $versions = array_filter(
             array_map('trim', explode(',', $input->getArgument('versions')))
         );
+        sort($versions);
         foreach ($versions as $version) {
             $this->processVersion($version);
         }
