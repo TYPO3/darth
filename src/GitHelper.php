@@ -330,14 +330,14 @@ class GitHelper
     }
 
     /**
-     * Calls git push origin HEAD:refs/publish/$remoteBranch and then does an autoapprove by Gerrit.
+     * Calls git push origin HEAD:refs/for/$remoteBranch and then does an autoapprove by Gerrit.
      *
      * @param string $remoteBranch
      * @param string $commitHash
      */
     public function pushAndApproveWithGerrit(string $remoteBranch, string $commitHash)
     {
-        $this->git->push('origin', 'HEAD:refs/publish/' . $remoteBranch);
+        $this->git->push('origin', 'HEAD:refs/for/' . $remoteBranch);
         // Auto approve by gerrit
         if (getenv('GERRIT_AUTO_APPROVE_COMMAND')) {
             (new Process(getenv('GERRIT_AUTO_APPROVE_COMMAND') . ' ' . $commitHash, $this->workingDirectory))->run();
