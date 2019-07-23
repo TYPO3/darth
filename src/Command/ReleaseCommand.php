@@ -209,7 +209,7 @@ class ReleaseCommand extends Command
             (new Process(
                 'composer update --lock',
                 $this->getApplication()->getWorkingDirectory()
-            ))->run();
+            ))->setTimeout(null)->run();
         }
 
         $commitMessage = '[TASK] Set TYPO3 version to ' . $upcomingVersion . '-dev';
