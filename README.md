@@ -21,6 +21,7 @@ git (ensure that you have rights to add tags to the remote repository directly).
         
         [version] can be either "8.7.3" or "8.7" for detecting the branch and the next version (of no specific version is set)
             
+        --sprint-release    If this option is set, the version is considered as sprint release (e.g. 9.1.0)
         --commitMessage -m  An additional information to the commit message of the release commit.
         --interactive   -i  Enabled by default, to verify that the right version and branch is used.
         --dry-run           No push to the remote git repository and gerrit is done, making all changes only in the local repository.
