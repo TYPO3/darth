@@ -41,13 +41,19 @@ class Release implements \JsonSerializable
      */
     private $releaseNotes;
 
+    /**
+     * @var bool
+     */
+    private $elts;
+
     public function __construct(
         string $version,
         string $type,
         \DateTimeInterface $date,
         HashCollection $tarPackage,
         HashCollection $zipPackage,
-        ReleaseNotes $releaseNotes = null
+        ReleaseNotes $releaseNotes = null,
+        bool $elts = false
     )
     {
         $this->version = $version;
@@ -56,6 +62,7 @@ class Release implements \JsonSerializable
         $this->tarPackage = $tarPackage;
         $this->zipPackage = $zipPackage;
         $this->releaseNotes = $releaseNotes;
+        $this->elts = $elts;
     }
 
     /**
@@ -69,6 +76,7 @@ class Release implements \JsonSerializable
             'date' => $this->getUtcDate()->format('Y-m-d\TH:i:sP'),
             'tar_package' => $this->tarPackage,
             'zip_package' => $this->zipPackage,
+            'elts' => $this->elts,
         ];
         if ($this->releaseNotes !== null) {
             $result['release_notes'] = $this->releaseNotes;
@@ -137,5 +145,13 @@ class Release implements \JsonSerializable
     public function getReleaseNotes(): ReleaseNotes
     {
         return $this->releaseNotes;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isElts(): bool
+    {
+        return $this->elts;
     }
 }

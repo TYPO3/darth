@@ -87,6 +87,13 @@ class AnnounceCommand extends Command
                 false
             )
             ->addOption(
+                'elts',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Whether the release is an ELTS release',
+                false
+            )
+            ->addOption(
                 'interactive',
                 'i',
                 InputOption::VALUE_OPTIONAL,
@@ -113,6 +120,7 @@ class AnnounceCommand extends Command
         $releaseType = $input->getOption('type');
         $sprintRelease = $input->hasOption('sprint-release') && $input->getOption('sprint-release') !== false;
         $force = $input->hasOption('force') && $input->getOption('force') !== false;
+        $elts = $input->hasOption('elts') && $input->getOption('elts') !== false;
         $interactive = $input->hasOption('interactive') && $input->getOption('interactive') !== false;
         $configuration = $this->getConfiguration();
         $versionObject = new Version($version);
@@ -187,7 +195,8 @@ class AnnounceCommand extends Command
             $signatureDate,
             new HashCollection($hashes['tar_package']),
             new HashCollection($hashes['zip_package']),
-            $this->parseReleaseNotesFile($releaseNotesPath)
+            $this->parseReleaseNotesFile($releaseNotesPath),
+            $elts
         );
 
         if (empty($existingRelease)) {
