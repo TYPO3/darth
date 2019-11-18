@@ -12,7 +12,6 @@ namespace TYPO3\Darth\Command;
  */
 
 use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
-use MicrosoftAzure\Storage\Common\ServicesBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,6 +20,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
 use TYPO3\Darth\Application;
+use TYPO3\Darth\Exception\EltsPublishException;
+use TYPO3\Darth\Uploader\AzureUploader;
+use TYPO3\Darth\Uploader\EltsUploader;
 
 /**
  * Upload files to the cloud.
@@ -49,6 +51,12 @@ class PublishCommand extends Command
                 InputOption::VALUE_OPTIONAL,
                 'Set it to "security" if something special is needed',
                 'bugfix'
+            )
+            ->addOption(
+                'elts',
+                null,
+                InputOption::VALUE_NONE,
+                'Whether the release is an ELTS release'
             );
     }
 
@@ -62,28 +70,33 @@ class PublishCommand extends Command
 
         $version = $input->getArgument('version');
         $releaseType = $input->getOption('type');
+        $isElts = $input->getOption('elts');
 
         $artefactsDirectory = $this->getApplication()->getArtefactsDirectory($version);
+        if ($isElts) {
+            $uploader = new EltsUploader();
+        } else {
+            $uploader = new AzureUploader();
+        }
 
-        $blobClient = ServicesBuilder::getInstance()->createBlobService(getenv('AZURE_CONNECTIONSTRING'));
-
-        $containerName = getenv('AZURE_CONTAINER');
         $blobPrefix = ($releaseType === 'snapshot' ? 'snapshot-' . $version : ltrim($version, 'v'));
-        $this->io->note('Using container ' . $containerName);
+        $this->io->note($uploader->getUploadStartMessage());
 
         $hasErrors = false;
         $finder = new Finder();
         $finder->in($artefactsDirectory)->files()->depth(0);
         foreach ($finder as $file) {
-            $content = fopen((string) $file, (substr((string) $file, -2) === 'md') ? 'r' : 'rb');
             $blobName = $blobPrefix . '/' . basename((string) $file);
             $this->io->note('Uploading to ' . $blobName);
             try {
-                $blobClient->createBlockBlob($containerName, $blobName, $content);
-                $this->io->success('Uploaded ' . basename((string)$file) . ' on ' . date('Y-m-d H:i:s'));
+                $uploader->upload((string)$file, $blobName);
+                $this->io->success('Uploaded ' . basename((string) $file) . ' on ' . date('Y-m-d H:i:s'));
             } catch (ServiceException $e) {
                 // Error codes and messages are here:
                 // http://msdn.microsoft.com/library/azure/dd179439.aspx
+                $this->io->error('Error while uploading ' . $blobName . ' from ' . $file . ': ' . $e->getMessage());
+                $hasErrors = true;
+            } catch (EltsPublishException $e) {
                 $this->io->error('Error while uploading ' . $blobName . ' from ' . $file . ': ' . $e->getMessage());
                 $hasErrors = true;
             }
