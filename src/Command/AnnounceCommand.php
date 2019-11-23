@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 namespace TYPO3\Darth\Command;
 
 /*
@@ -249,7 +249,7 @@ class AnnounceCommand extends Command
                 'Did not find any content blocks',
                 1522937252
             );
-        };
+        }
 
         $data = array_combine(
             $matches['identifier'],

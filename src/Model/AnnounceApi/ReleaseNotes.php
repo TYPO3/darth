@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 namespace TYPO3\Darth\Model\AnnounceApi;
 
 /*
@@ -21,8 +21,7 @@ class ReleaseNotes implements \JsonSerializable
         string $news,
         string $upgradingInstructions,
         string $changes
-    )
-    {
+    ) {
         $this->newsLink = $newsLink;
         $this->news = $news;
         $this->upgradingInstructions = $upgradingInstructions;

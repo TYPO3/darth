@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace TYPO3\Darth\Tests\Unit;
 
@@ -10,7 +10,7 @@ namespace TYPO3\Darth\Tests\Unit;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-#
+//
 
 use PHPUnit\Framework\TestCase;
 use TYPO3\Darth\Application;

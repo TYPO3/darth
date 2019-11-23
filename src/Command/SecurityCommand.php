@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 namespace TYPO3\Darth\Command;
 
 /*
@@ -200,7 +200,7 @@ class SecurityCommand extends Command
 
     /**
      * @param string $url
-     * @return null|string
+     * @return string|null
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     private function getTitleFromNewsLink(string $url)

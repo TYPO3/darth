@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 namespace TYPO3\Darth\Service;
 
 /*
@@ -38,8 +38,7 @@ class AnnounceApiService
         VariableResolveService $variableResolveService,
         ClientInterface $client,
         array $configuration
-    )
-    {
+    ) {
         $this->variableResolveService = $variableResolveService;
         $this->client = $client;
         $this->configuration = $configuration;

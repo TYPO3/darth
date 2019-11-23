@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 namespace TYPO3\Darth\Model\SecurityAdvisory;
 
 /*
@@ -40,8 +40,7 @@ class Branch
     public function __construct(
         \DateTimeInterface $time,
         Version $version
-    )
-    {
+    ) {
         $this->time = $time;
         $this->name = sprintf(
             '%d.x',

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace TYPO3\Darth\Command;
 
@@ -75,8 +75,8 @@ class PublishCommand extends Command
         $finder = new Finder();
         $finder->in($artefactsDirectory)->files()->depth(0);
         foreach ($finder as $file) {
-            $content = fopen((string) $file, (substr((string) $file, -2) === 'md') ? 'r' : 'rb');
-            $blobName = $blobPrefix . '/' . basename((string) $file);
+            $content = fopen((string)$file, (substr((string)$file, -2) === 'md') ? 'r' : 'rb');
+            $blobName = $blobPrefix . '/' . basename((string)$file);
             $this->io->note('Uploading to ' . $blobName);
             try {
                 $blobClient->createBlockBlob($containerName, $blobName, $content);

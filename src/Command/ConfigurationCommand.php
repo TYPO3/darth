@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 namespace TYPO3\Darth\Command;
 
 /*
@@ -51,7 +51,7 @@ class ConfigurationCommand extends Command
             ->setHeaders(['key', 'getenv($key)'])
             ->setRows(
                 array_map(
-                    function(string $key) use ($dotEnvAssignments) {
+                    function (string $key) use ($dotEnvAssignments) {
                         return [
                             $key,
                             $this->stringBreak(getenv($key), 50),
@@ -95,7 +95,7 @@ class ConfigurationCommand extends Command
         if ($indent) {
             array_walk(
                 $lines,
-                function(string &$line, int $index) {
+                function (string &$line, int $index) {
                     if ($index > 0) {
                         $line = '<info>\ </info>' . $line;
                     }

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace TYPO3\Darth\Command;
 
@@ -81,7 +81,7 @@ class PackageCommand extends Command
             $versionParts = explode('.', $version);
             if (count($versionParts) < 3) {
                 $releaseType = 'snapshot';
-            } elseif ((int) $versionParts[2] > 0) {
+            } elseif ((int)$versionParts[2] > 0) {
                 $releaseType = 'bugfix and maintenance';
             } else {
                 $releaseType = 'regular sprint';
@@ -228,12 +228,12 @@ class PackageCommand extends Command
 
                 // see https://github.com/symfony/symfony/issues/9319 why we use iterator_to_array
                 foreach (iterator_to_array($finder, true) as $foundFile) {
-                    if (is_dir((string) $foundFile)) {
+                    if (is_dir((string)$foundFile)) {
                         $this->io->writeln('Removing folder ' . $foundFile);
                         (new Process('rm -r ' . $foundFile))->run();
                     } else {
                         $this->io->writeln('Removing file ' . $foundFile);
-                        unlink((string) $foundFile);
+                        unlink((string)$foundFile);
                     }
                 }
             }
@@ -265,7 +265,7 @@ class PackageCommand extends Command
             }
             foreach ($finder as $foundFile) {
                 $this->io->writeln('Set file ' . $foundFile . ' to be executable');
-                chmod((string) $foundFile, 0755);
+                chmod((string)$foundFile, 0755);
             }
         }
 

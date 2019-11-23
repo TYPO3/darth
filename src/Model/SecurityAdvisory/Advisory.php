@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 namespace TYPO3\Darth\Model\SecurityAdvisory;
 
 /*
@@ -40,8 +40,7 @@ class Advisory
         string $advisory,
         string $title,
         string $link
-    )
-    {
+    ) {
         $this->advisoryId = $advisory;
         $this->title = $title;
         $this->link = $link;
