@@ -1,12 +1,22 @@
 updateFiles:
+  # escaping single quotes ' in YAML have to be two single quotes ''
+  # + v10.3.0: changed from SystemEnvironmentBuilder.php to Typo3Version.php
   -
+
     file: "typo3/sysext/core/Classes/Core/SystemEnvironmentBuilder.php"
-    # Escaped ' is done via ''
     pattern: '\''TYPO3_version\'',\s*\''([^\'']+)'
     type: "bugfixVersion"
   -
     file: "typo3/sysext/core/Classes/Core/SystemEnvironmentBuilder.php"
     pattern: '\''TYPO3_branch\'',\s*\''([^\'']+)'
+    type: "minorVersion"
+  -
+    file: "typo3/sysext/core/Classes/Information/Typo3Version.php"
+    pattern: 'const\s+VERSION\s*=\s*\''([^\'']+)'
+    type: "bugfixVersion"
+  -
+    file: "typo3/sysext/core/Classes/Information/Typo3Version.php"
+    pattern: 'const\s+BRANCH\s*=\s*\''([^\'']+)'
     type: "minorVersion"
   -
     file: "typo3/sysext/*/ext_emconf.php"
