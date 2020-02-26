@@ -28,8 +28,11 @@ updateFiles:
     type: "bugfixVersion"
   -
     file: "typo3/sysext/core/Classes/Core/SystemEnvironmentBuilder.php"
-    # Escaped ' is done via ''
     pattern: '\''TYPO3_version\'',\s*\''([^\'']+)'
+    type: "nextDevVersion"
+  -
+    file: "typo3/sysext/core/Classes/Information/Typo3Version.php"
+    pattern: 'const\s+VERSION\s*=\s*\''([^\'']+)'
     type: "nextDevVersion"
   -
     file: "typo3/sysext/*/composer.json"
