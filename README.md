@@ -1,8 +1,8 @@
-# Darth - Building TYPO3 Release
+# Darth - Building TYPO3 Releases
 
-Darth is a command line application to build and publish releases.
+TYPO3 Darth is a command line application to build and publish releases, specifically, but not only for TYPO3 Core.
 
-## The four steps to a release
+## The steps to a TYPO3 release
 
 ### 1. Initializing the local setup
 
@@ -11,11 +11,11 @@ Sets up the working local repository by removing all previous set ups and re-clo
     ./bin/darth init
 
 
-### 2. Release (Commit and Tag)
+### 2. Release (Commit and Tag to the Mono-Repository)
 
 Checks out a certain branch (based on the version), creates a signed commit via GPG key and pushes this to the
-remote repository, and auto-approves via gerrit. Once the commit is in, a tag is created as well and pushed to
-git (ensure that you have rights to add tags to the remote repository directly).
+remote repository, and auto-approves via Gerrit, our Review System. Once the commit has arrived, a tag is created
+as well for this commit and pushed to git (ensure that you have rights to add tags to the remote repository directly).
 
     ./bin/darth release [version]
         
@@ -27,12 +27,12 @@ git (ensure that you have rights to add tags to the remote repository directly).
         --dry-run           No push to the remote git repository and gerrit is done, making all changes only in the local repository.
     
 
-### 3. Package (Artefacts)
+### 3. Package (Artifacts)
 
-Creates artefacts (tar.gz and .zip) based on a specific version in the local git repository by calling `git-archive`,
+Creates artifacts (tar.gz and .zip) based on a specific version in the local git repository by calling `git-archive`,
 `composer install` and removing left-over test and development files.
 
-The artefacts are signed via GPG, and a README.md file is also created that contains the ChangeLog since the last
+The artifacts are signed via GPG, and a README.md file is also created that contains a generated ChangeLog since the last
 release, which is also signed via GPG.
 
 All created files are put in the publish/[version]/artefacts folder.
@@ -46,9 +46,9 @@ All created files are put in the publish/[version]/artefacts folder.
 
     ./bin/darth package 9.1.0 v9.1.0
 
-### 4. Publish (Upload)
+### 4. Publish (Upload to a remote server)
 
-Uploads the files to a Azure blob storage container (the container must exist).
+Uploads the artifacts of a specific version to a Azure blob storage container (the container must exist).
 
 All created files are put in the publish/[version]/artefacts folder.
 
@@ -58,10 +58,10 @@ All created files are put in the publish/[version]/artefacts folder.
 
     ./bin/darth publish 9.1.0
 
-### 5. Announce (to get.typo3.org)
+### 5. Announce (Create a new entry on get.typo3.org)
 
-Uses the REST API to announce download packages, checksums, news link and
-release note text to get.typo3.org. Checksums are recalculated from local
+Uses the REST API of get.typo3.org to announce download packages, checksums, news link and
+release note text on get.typo3.org. Checksums are recalculated from local
 release packages in `publish/[version]/artefacts`.
 
     ./bin/darth announce [version] [news-link]
@@ -74,7 +74,7 @@ release packages in `publish/[version]/artefacts`.
     ./bin/darth announce 9.2.0 https://new.typo3.org/article/typo3-v920-released/ --sprint-release
     ./bin/darth announce 8.7.12 https://new.typo3.org/article/typo3-8712-and-7626-released/
 
-### 6. Security Advistories (to https://github.com/FriendsOfPHP/security-advisories)
+### 6. Create Security Advisories (to https://github.com/FriendsOfPHP/security-advisories)
 
 In case the current release contains security fixes, these have to be prepared and announced
 for https://github.com/FriendsOfPHP/security-advisories. The workflow is the following:
@@ -82,20 +82,20 @@ for https://github.com/FriendsOfPHP/security-advisories. The workflow is the fol
     ./bin/darth security [versions separated by comma]
     ./bin/darth security 9.5.2,8.7.21,7.6.32
 
-Then merge generated files in `security/` directorty manually to `sensiolabs/security-advisories` package.
+Then merge generated files in `security/` directory manually to `sensiolabs/security-advisories` package.
 
 ## Configuration
 
-See .env.dist which sets most configuration options already, however, the remote connection string for uploading
-artefacts must be set in a custom `.env` file.
+See `.env.dist` which sets most configuration options already, however, the remote connection string for uploading
+artifacts must be set in a custom `.env` file.
 
 Information when updating files before commiting a release, as well as files excluded for packaging are found
 within `conf/release.yaml`.
 
-Ensure that you have all tools (shasum, gpg, composer) installed locally, also that you have a proper gpg key
+Ensure that you have all tools (shasum, gpg, composer) installed locally, also that you have a proper GPG key
 in your git configuration (`git config user.signingkey`, can also be set globally).
 
-For MacOS users please install gnu-tar (`brew install gnu-tar`) and use that binary in your custom .env configuration
+For MacOS users please install gnu-tar (`brew install gnu-tar`) and use that binary in your custom `.env` configuration
 to ensure compatibility across all destination servers.
 
 ## Credits
