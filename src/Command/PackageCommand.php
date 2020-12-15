@@ -75,7 +75,8 @@ class PackageCommand extends Command
         $this->gitHelper = new GitHelper($this->getApplication()->getWorkingDirectory(), $this->io->isVerbose());
 
         $version = $input->getArgument('version');
-        $revision = $input->getArgument('revision') ?: $version;
+	// If no revision is given, use the version with a "v" prefix, like "v10.4.11" as this is the tag that was set in the release command
+        $revision = $input->getArgument('revision') ?: 'v' . $version;
         $releaseType = $input->getOption('type');
         if (!$releaseType) {
             $versionParts = explode('.', $version);
