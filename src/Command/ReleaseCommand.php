@@ -106,9 +106,9 @@ class ReleaseCommand extends Command
 
         list(, $remoteBranch) = explode('/', $remoteBranchWithRemoteName);
         $this->io->note(
-            'The next version will be ' . $nextVersion . "\n" .
+            'The version to be created will be ' . $nextVersion . "\n" .
             'The branch to be used with is ' . $remoteBranchWithRemoteName . "\n" .
-            'The upcoming version would be ' . $upcomingVersion
+            'The version will be set to ' . $upcomingVersion . ' after the release'
         );
 
         if ($isInteractive) {
@@ -151,7 +151,7 @@ class ReleaseCommand extends Command
         // Push to remote origin with /RELEASE topic
         $this->io->note('Pushing commit ' . $localReleaseCommitHash . ' to gerrit, and auto-approve this commit.');
         if (!$dryRun) {
-            $this->gitHelper->pushAndApproveWithGerrit($remoteBranch . '/RELEASE', $localReleaseCommitHash);
+            $this->gitHelper->pushAndApproveWithGerrit($remoteBranch . '%topic=RELEASE', $localReleaseCommitHash);
 
             // Commit is pushed, now wait until gerrit and the remote git repository are in sync again
             $git->reset('--hard', $remoteBranchWithRemoteName); // now it should be back to $commitHashBeforeRelease
@@ -218,7 +218,7 @@ class ReleaseCommand extends Command
 
         $this->io->note('Pushing commit ' . $localReleaseCommitHash . ' to gerrit, and auto-approve this commit.');
         if (!$dryRun) {
-            $this->gitHelper->pushAndApproveWithGerrit($remoteBranch . '/RELEASE', $localReleaseCommitHash);
+            $this->gitHelper->pushAndApproveWithGerrit($remoteBranch . '%topic=RELEASE', $localReleaseCommitHash);
         } else {
             $this->io->comment('Skipped!');
         }
