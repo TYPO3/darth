@@ -156,6 +156,14 @@ class SecurityCommand extends Command
                 continue;
             }
             $advisoryId = $matches[1];
+            // streamline `CORE-SA-2021-008` to `TYPO3-CORE-SA-2021-008`
+            if (strpos($advisoryId, 'TYPO3-') !== 0) {
+                $advisoryId = 'TYPO3-' . $advisoryId;
+            }
+            // skip public service announcements (PSA)
+            if (strpos($advisoryId, 'TYPO3-PSA-') === 0) {
+                continue;
+            }
             $date = (new \DateTimeImmutable($change['date']))->setTimezone($utc);
             $url = sprintf(
                 getenv('SECURITY_ADVISORY_URL_PATTERN'),
