@@ -49,6 +49,12 @@ class SecurityCommand extends Command
     private $gitHelper;
 
     /**
+     * Local cache of content per URL
+     * @var array<string, string>
+     */
+    private $fetched = [];
+
+    /**
      * {@inheritdoc}
      */
     public function configure()
@@ -107,9 +113,13 @@ class SecurityCommand extends Command
                 ], [
                     Branch::class => $branchClosure,
                 ]);
-                $date = $advisory->getFirstDate()->format('Y-m-d');
-                $dates[$date] = ($dates[$date] ?? 0) + 1;
-                $fileName = sprintf('%s/%s-%d.yaml', $path, $date, $dates[$date]);
+                if ($advisory->getCve() !== null) {
+                    $fileName = sprintf('%s/%s.yaml', $path, strtolower($advisory->getCve()));
+                } else {
+                    $date = $advisory->getFirstDate()->format('Y-m-d');
+                    $dates[$date] = ($dates[$date] ?? 0) + 1;
+                    $fileName = sprintf('%s/%s-%d.yaml', $path, $date, $dates[$date]);
+                }
                 file_put_contents(
                     $fileName,
                     Yaml::dump($payload, 3, 4)
@@ -175,8 +185,9 @@ class SecurityCommand extends Command
             } else {
                 $advisory = new Advisory(
                     $advisoryId,
-                    $this->getTitleFromNewsLink($url) ?? '',
-                    $url
+                    $this->getTitleFromNews($url) ?? '',
+                    $url,
+                    $this->getCveFromNews($url)
                 );
                 $this->collection->addAdvisory($advisory);
             }
@@ -211,13 +222,30 @@ class SecurityCommand extends Command
      * @return null|string
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    private function getTitleFromNewsLink(string $url)
+    private function getTitleFromNews(string $url): ?string
     {
-        $content = (string)$this->client->request('GET', $url)->getBody();
+        $content = $this->fetchContent($url);
         if (preg_match('#<title>(.+)</title>#', $content, $matches)) {
             return $matches[1];
         }
         return null;
+    }
+
+    private function getCveFromNews(string $url): ?string
+    {
+        $content = $this->fetchContent($url);
+        if (preg_match_all('#(?:CVE|References):.+(?P<cve>CVE-\d+-\d+)#', $content, $matches)) {
+            return $matches['cve'][0];
+        }
+        return null;
+    }
+
+    private function fetchContent(string $url): string
+    {
+        if (!isset($this->fetched[$url])) {
+            $this->fetched[$url] = (string)$this->client->request('GET', $url)->getBody();
+        }
+        return $this->fetched[$url];
     }
 
     /**

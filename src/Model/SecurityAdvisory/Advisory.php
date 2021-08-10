@@ -27,6 +27,11 @@ class Advisory
     private $link;
 
     /**
+     * @var string|null
+     */
+    private $cve;
+
+    /**
      * @var Branch[]
      */
     private $branches = [];
@@ -35,16 +40,19 @@ class Advisory
      * @param string $advisory
      * @param string $title
      * @param string $link
+     * @param string|null $cve
      */
     public function __construct(
         string $advisory,
         string $title,
-        string $link
+        string $link,
+        string $cve = null
     )
     {
         $this->advisoryId = $advisory;
         $this->title = $title;
         $this->link = $link;
+        $this->cve = $cve;
     }
 
     /**
@@ -54,10 +62,16 @@ class Advisory
      */
     public function export(array $additional = [], array $callbacks = []): array
     {
+        $data = [
+            'title' => $this->title,
+            'link' => $this->link,
+        ];
+        if ($this->cve !== null) {
+            $data['cve'] = $this->cve;
+        }
         return array_merge(
+            $data,
             [
-                'title' => $this->title,
-                'link' => $this->link,
                 'branches' => array_filter(
                     array_map(
                         function (Branch $branch) use ($additional, $callbacks) {
@@ -123,6 +137,14 @@ class Advisory
     public function getLink(): string
     {
         return $this->link;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCve(): ?string
+    {
+        return $this->cve;
     }
 
     /**
