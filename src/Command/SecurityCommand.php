@@ -114,7 +114,7 @@ class SecurityCommand extends Command
                     Branch::class => $branchClosure,
                 ]);
                 if ($advisory->getCve() !== null) {
-                    $fileName = sprintf('%s/%s.yaml', $path, strtolower($advisory->getCve()));
+                    $fileName = sprintf('%s/%s.yaml', $path, $advisory->getCve());
                 } else {
                     $date = $advisory->getFirstDate()->format('Y-m-d');
                     $dates[$date] = ($dates[$date] ?? 0) + 1;
