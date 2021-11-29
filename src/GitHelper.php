@@ -124,11 +124,11 @@ class GitHelper
 
     /**
      * Fetches all branches, and greps for all remote branches that either start with a number "9.0" or with "...-9.0)
-     * If none matching is found, then "origin/master" is assumed.
+     * If none matching is found, then "origin/main" is assumed.
      *
      * @param string $nextVersion the version to be expected, only the minor version parts (the first two parts of the version) are evaluated for the branch
      *
-     * @return string the remote branch, with the name of the remote before. "origin/master" or "origin/9.0"
+     * @return string the remote branch, with the name of the remote before. "origin/main" or "origin/9.0"
      */
     public function findRemoteBranch(string $nextVersion): string
     {
@@ -145,7 +145,7 @@ class GitHelper
             }
         }
         if ($usedBranch === null) {
-            $usedBranch = 'origin/master';
+            $usedBranch = 'origin/main';
         }
 
         return $usedBranch;
