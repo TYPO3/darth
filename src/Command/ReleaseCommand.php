@@ -49,7 +49,7 @@ class ReleaseCommand extends Command
             ->addArgument(
                 'version',
                 InputArgument::REQUIRED,
-                'Set it to "8.7" to release the next "8.7.x" version (even if "8.7.0" has not been released). Checks for a branch named like TYPO3_8-7 or uses master'
+                'Set it to "8.7" to release the next "8.7.x" version (even if "8.7.0" has not been released). Checks for a branch named like TYPO3_8-7 or uses main'
             )
             ->addOption(
                 'commitMessage',
