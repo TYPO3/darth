@@ -41,12 +41,12 @@ updateFiles:
   # ensure 8.7.5 is replaced by 8.7.6
   -
     file: "typo3/sysext/*/composer.json"
-    pattern: '"dev-master": "(\d+\.\d+\.x-dev)"'
+    pattern: '"dev-main": "(\d+\.\d+\.x-dev)"'
     type: "nextDevBranchAlias"
   # ensure 9.2.x-dev is replaced by 9.3.x-dev
   -
     file: "composer.json"
-    pattern: '"dev-master": "(\d+\.\d+\.x-dev)"'
+    pattern: '"dev-main": "(\d+\.\d+\.x-dev)"'
     type: "nextDevBranchAlias"
   # ensure 9.2.x-dev is replaced by 9.3.x-dev
   -
