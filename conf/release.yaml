@@ -102,16 +102,16 @@ announce:
   endpoints:
     getRelease:
       method: "GET"
-      uri: "/v1/api/release/{version}"
+      uri: "/api/v1/release/{version}"
     addRelease:
       method: "POST"
-      uri: "/v1/api/release/"
+      uri: "/api/v1/release/"
     updateRelease:
       method: "PATCH"
-      uri: "/v1/api/release/{version}"
+      uri: "/api/v1/release/{version}"
     setReleaseNotes:
       method: "PUT"
-      uri: "/v1/api/release/{version}/release-notes"
+      uri: "/api/v1/release/{version}/release-notes"
     deleteReleaseCache:
       method: "DELETE"
-      uri: "/v1/api/cache/release/{version}"
+      uri: "/api/v1/cache/release/{version}"
