@@ -206,7 +206,7 @@ class AnnounceCommand extends Command
         }
 
         $this->io->success(
-            sprintf('Release %s announce', $release->getVersion())
+            sprintf('Release %s announced', $release->getVersion())
         );
     }
 
