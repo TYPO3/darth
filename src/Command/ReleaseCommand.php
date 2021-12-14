@@ -245,10 +245,19 @@ class ReleaseCommand extends Command
 
         // now find the files you want to modify
         foreach ($configuration as $fileDetails) {
-            $finder = new Finder();
-            $finder->name(basename($fileDetails['file']))
-                ->ignoreUnreadableDirs()
-                ->in($workingDirectory . '/' . dirname($fileDetails['file']));
+            try {
+                $finder = new Finder();
+                $finder->name(basename($fileDetails['file']))
+                    ->ignoreUnreadableDirs()
+                    ->in($workingDirectory . '/' . dirname($fileDetails['file']));
+            } catch (\InvalidArgumentException $exception) {
+                // skips directory search patterns that do not exist in older versions
+                // (e.g. `Build/composer/composer.dist.json` introduced with TYPO3 v11)
+                if ($this->io->isVerbose()) {
+                    $this->io->warning($exception->getMessage());
+                }
+                continue;
+            }
 
             foreach ($finder as $foundFile) {
                 $fileContents = $foundFile->getContents();
