@@ -18,6 +18,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use TYPO3\Darth\Application;
 use TYPO3\Darth\GitHelper;
@@ -206,10 +207,15 @@ class ReleaseCommand extends Command
 
         if ($sprintRelease) {
             $this->io->note('Update composer.lock file');
-            (new Process(
+            $process = new Process(
                 'composer update --lock',
                 $this->getApplication()->getWorkingDirectory()
-            ))->setTimeout(null)->run();
+            );
+            $process->setTimeout(null);
+            $process->run();
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
         }
 
         $commitMessage = '[TASK] Set TYPO3 version to ' . $upcomingVersion . '-dev';

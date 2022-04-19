@@ -19,6 +19,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use TYPO3\Darth\Application;
 use TYPO3\Darth\GitHelper;
@@ -131,16 +132,22 @@ class PackageCommand extends Command
 
         // Sign the README.md file
         $signingKey = $this->gitHelper->getSigningKey();
-        (new Process(
+        $this->runProcess(
             'gpg --yes --digest-algo SHA256 -u ' . $signingKey . ' --clearsign --output README.md README_unsigned.md',
             $artefactsDirectory
-        ))->run();
+        );
         unlink($artefactsDirectory . '/README_unsigned.md');
 
         // Legacy code
         // Show MD5 hashes and SHA1 hashes
-        (new Process('md5 -r *.gz *.zip', $artefactsDirectory))->run();
-        (new Process('shasum  *.gz *.zip', $artefactsDirectory))->run();
+        $this->io->note(
+            "MD5 hashes of the artefacts:\n"
+            . $this->runProcess('md5sum *.gz *.zip', $artefactsDirectory)->getOutput()
+        );
+        $this->io->note(
+            "SHA1 hashes of the artefacts:\n"
+            . $this->runProcess('sha1sum *.gz *.zip', $artefactsDirectory)->getOutput()
+        );
 
         $this->io->success('All done. Just upload it now with the "publish" process.');
     }
@@ -182,7 +189,7 @@ class PackageCommand extends Command
         $git->archive('--format', 'tar', '-o', $archiveFile, $revision);
 
         // Extract and remove the GIT archive
-        (new Process(getenv('TAR_COMMAND') . ' xf ' . $archiveFile . ' && rm ' . $archiveFile, $sourceCodeDirectory))->run();
+        $this->runProcess(getenv('TAR_COMMAND') . ' xf ' . $archiveFile . ' && rm ' . $archiveFile, $sourceCodeDirectory);
 
         // Run "composer install" - you have to do "COMPOSER_ROOT_VERSION=8.7.5" because we have a git archive, baby!
         $this->runComposerCommand($sourceCodeDirectory);
@@ -201,7 +208,7 @@ class PackageCommand extends Command
     {
         $composerCommand = getenv('COMPOSER_INSTALL_COMMAND');
         $this->io->note('Now running ' . $composerCommand);
-        (new Process($composerCommand, $directory))->run();
+        $this->runProcess($composerCommand, $directory);
     }
 
     /**
@@ -231,7 +238,7 @@ class PackageCommand extends Command
                 foreach (iterator_to_array($finder, true) as $foundFile) {
                     if (is_dir((string) $foundFile)) {
                         $this->io->writeln('Removing folder ' . $foundFile);
-                        (new Process('rm -r ' . $foundFile))->run();
+                        $this->runProcess('rm -r ' . $foundFile);
                     } else {
                         $this->io->writeln('Removing file ' . $foundFile);
                         unlink((string) $foundFile);
@@ -271,7 +278,7 @@ class PackageCommand extends Command
         }
 
         // Change ownership to root
-        (new Process('sudo chown -R 0:0 .', $directory))->run();
+        $this->runProcess('sudo chown -R 0:0 .', $directory);
     }
 
     /**
@@ -291,8 +298,8 @@ class PackageCommand extends Command
             'zip' => $artefactBaseName . '.zip',
         ];
 
-        (new Process(getenv('TAR_COMMAND') . ' -czf ' . $artefactDirectory . '/' . $artefacts['tar.gz'] . ' ' . $artefactBaseName . '/', dirname($sourceCodeDirectory)))->run();
-        (new Process('zip -rq9 ' . $artefactDirectory . '/' . $artefacts['zip'] . ' ' . $artefactBaseName . '/', dirname($sourceCodeDirectory)))->run();
+        $this->runProcess(getenv('TAR_COMMAND') . ' -czf ' . $artefactDirectory . '/' . $artefacts['tar.gz'] . ' ' . $artefactBaseName . '/', dirname($sourceCodeDirectory));
+        $this->runProcess('zip -rq9 ' . $artefactDirectory . '/' . $artefacts['zip'] . ' ' . $artefactBaseName . '/', dirname($sourceCodeDirectory));
 
         // create checksums
         $this->io->note('Generating SHA256 checksums for artefacts.');
@@ -306,13 +313,24 @@ class PackageCommand extends Command
         $this->io->note('Creating GPG signatures for artefacts.');
         $signingKey = $this->gitHelper->getSigningKey();
         foreach ($artefacts as $fileName) {
-            (new Process(
+            $this->runProcess(
                 'gpg --yes --digest-algo SHA256 -u ' . $signingKey . ' --output ' . $fileName . '.sig --detach-sig ' . $fileName,
                 $artefactDirectory
-            ))->run();
+            );
         }
 
         return $checksums;
+    }
+
+    private function runProcess(...$processArguments): Process
+    {
+        $process = new Process(...$processArguments);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        return $process;
     }
 
     /**

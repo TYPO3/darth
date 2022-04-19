@@ -9,6 +9,7 @@ namespace TYPO3\Darth\Service;
  * file that was distributed with this source code.
  */
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 class FileHashService
@@ -50,15 +51,9 @@ class FileHashService
         $command = $this->getCommand($algorithmName, $filePattern);
         $process = new Process($command, $this->workingDirectory);
         $process->run();
-        if ($process->getExitCode() !== 0) {
-            throw new \RuntimeException(
-                sprintf(
-                    "Command \"%s\" failed:\n%s",
-                    $command,
-                    $process->getErrorOutput()
-                ),
-                1522925350
-            );
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
         }
         return trim($process->getOutput(), "- \n\r");
     }

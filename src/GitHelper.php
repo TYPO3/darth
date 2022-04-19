@@ -15,6 +15,7 @@ use GitWrapper\Event\GitOutputStreamListener;
 use GitWrapper\GitException;
 use GitWrapper\GitWorkingCopy;
 use GitWrapper\GitWrapper;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 /**
@@ -340,7 +341,11 @@ class GitHelper
         $this->git->push('origin', 'HEAD:refs/for/' . $remoteBranch);
         // Auto approve by gerrit
         if (getenv('GERRIT_AUTO_APPROVE_COMMAND')) {
-            (new Process(getenv('GERRIT_AUTO_APPROVE_COMMAND') . ' ' . $commitHash, $this->workingDirectory))->run();
+            $process = new Process(getenv('GERRIT_AUTO_APPROVE_COMMAND') . ' ' . $commitHash, $this->workingDirectory);
+            $process->run();
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
         }
     }
 }
