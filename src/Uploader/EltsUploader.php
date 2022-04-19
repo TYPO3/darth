@@ -43,41 +43,15 @@ class EltsUploader implements UploaderInterface
 
     public function upload(string $file, string $blobName)
     {
-        $path = $this->uploadPackage($file, $blobName);
-        $this->fixPermissions($path);
-    }
-
-    /**
-     * Uploads the package to the server
-     *
-     * @param string $localFile
-     * @param string $remoteFileName
-     * @return string
-     */
-    private function uploadPackage(string $localFile, string $remoteFileName): string
-    {
-        $fullPath = $this->packageLocation . $remoteFileName;
+        $fullPath = $this->packageLocation . $blobName;
         $remoteTargetDirectory = dirname($fullPath);
         $this->createTargetDirectory($remoteTargetDirectory);
 
-        $process = new Process(['scp', $localFile, $this->server . ':' . $fullPath]);
+        $process = new Process(['scp', $file, $this->userName . '@' . $this->server . ':' . $fullPath]);
         $process->run();
         if (!$process->isSuccessful()) {
             throw new EltsPublishException($process->getErrorOutput());
         }
-
-        return $this->packageLocation . $remoteFileName;
-    }
-
-    /**
-     * Fixes permissions of the uploaded package
-     *
-     * @param string $remoteFile
-     */
-    private function fixPermissions(string $remoteFile)
-    {
-        $subCommand = sprintf('sudo chown %1$s:%1$s %2$s', escapeshellarg($this->userName), escapeshellarg($remoteFile));
-        $this->executeRemoteCommand($subCommand);
     }
 
     /**
@@ -87,14 +61,13 @@ class EltsUploader implements UploaderInterface
      */
     private function createTargetDirectory(string $remoteTargetDirectory)
     {
-        $subCommand = sprintf('sudo [ -d %1$s ] || mkdir %1$s', escapeshellarg($remoteTargetDirectory));
+        $subCommand = sprintf('[ -d %1$s ] || mkdir %1$s', escapeshellarg($remoteTargetDirectory));
         $this->executeRemoteCommand($subCommand);
-        $this->fixPermissions($remoteTargetDirectory);
     }
 
     private function executeRemoteCommand(string $command)
     {
-        $process = new Process(['ssh', '-t', $this->server, $command]);
+        $process = new Process(['ssh', '-t', $this->userName . '@' . $this->server, $command]);
         $process->run();
         if (!$process->isSuccessful()) {
             throw new EltsPublishException($process->getErrorOutput());
