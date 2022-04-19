@@ -18,6 +18,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use TYPO3\Darth\Application;
 use TYPO3\Darth\GitHelper;
@@ -275,6 +276,9 @@ class AnnounceCommand extends Command
             $this->getApplication()->getArtefactsDirectory($version)
         );
         $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
 
         $output = $process->getOutput();
         if ($output === '') {

@@ -11,6 +11,7 @@ namespace TYPO3\Darth;
  * file that was distributed with this source code.
  */
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 
@@ -195,7 +196,11 @@ class Application extends \Symfony\Component\Console\Application
     {
         // remove any old info
         if (@is_dir($directory)) {
-            (new Process('sudo rm -rf ' . $directory))->run();
+            $process = new Process('sudo rm -rf ' . $directory);
+            $process->run();
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
         }
         mkdir($directory);
     }
