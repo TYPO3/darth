@@ -51,7 +51,7 @@ updateFiles:
   # ensure 9.2.x-dev is replaced by 9.3.x-dev
   -
     file: "Build/composer/composer.dist.json"
-    pattern: '"typo3/cms-[^"]+": "(\d+\.\d+\.x-dev)"'
+    pattern: '"typo3\/cms-[^"]+": "(\d+\.\d+\.x-dev)"'
     type: "nextDevBranchAlias"
   # ensure 12.0.x-dev is replaced by 12.1.x-dev
   -
