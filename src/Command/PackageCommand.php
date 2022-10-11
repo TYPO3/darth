@@ -140,7 +140,7 @@ class PackageCommand extends Command
 
         // Legacy code
         // Show MD5 hashes and SHA1 hashes
-        $md5Command = sprintf(getenv('CHECKSUM_MD5_COMMAND'), '*.gz *.zip');
+        $md5Command = sprintf(getenv('CHECKSUM_MD5_COMMAND'), '', '*.gz *.zip');
         $this->io->note(
             "MD5 hashes of the artefacts:\n"
             . $this->runProcess($md5Command, $artefactsDirectory)->getOutput()
@@ -152,6 +152,7 @@ class PackageCommand extends Command
         );
 
         $this->io->success('All done. Just upload it now with the "publish" process.');
+        $this->io->comment('./bin/darth publish ' . $version);
     }
 
     /**
