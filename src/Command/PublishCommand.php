@@ -63,7 +63,7 @@ class PublishCommand extends Command
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('Upload all files to the cloud');
@@ -108,6 +108,7 @@ class PublishCommand extends Command
             $this->io->success('All done. Only the announcement is missing now!');
             $this->io->comment('./bin/darth announce ' . ltrim($version, 'v') . ' [LINK]');
         }
+        return 0;
     }
 
     /**

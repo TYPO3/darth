@@ -31,9 +31,6 @@ class Version implements \JsonSerializable
      */
     private $patch;
 
-    /**
-     * @param string $version
-     */
     public function __construct(string $version)
     {
         if (!preg_match(static::PATTERN, $version, $matches)) {
@@ -45,42 +42,26 @@ class Version implements \JsonSerializable
         $this->patch = (int)$matches['patch'] ?? 0;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->export($this->major, $this->minor, $this->patch);
     }
 
-    /**
-     * @return mixed|string
-     */
-    public function jsonSerialize()
+    public function jsonSerialize(): string
     {
         return (string)$this;
     }
 
-    /**
-     * @return string
-     */
     public function getAsMajor(): string
     {
         return $this->export($this->major);
     }
 
-    /**
-     * @return string
-     */
     public function getAsMinor(): string
     {
         return $this->export($this->major, $this->minor);
     }
 
-    /**
-     * @param string $position
-     * @return Version
-     */
     public function increment(string $position = self::PATCH): Version
     {
         $this->assertPosition($position);
@@ -94,10 +75,6 @@ class Version implements \JsonSerializable
         );
     }
 
-    /**
-     * @param string $position
-     * @return Version
-     */
     public function decrement(string $position = self::PATCH): Version
     {
         $this->assertPosition($position);
@@ -115,20 +92,13 @@ class Version implements \JsonSerializable
         );
     }
 
-    /**
-     * @param string $position
-     */
-    private function assertPosition(string $position)
+    private function assertPosition(string $position): void
     {
         if (!in_array($position, [static::MAJOR, static::MINOR, static::PATCH])) {
             throw new \RuntimeException('Invalid position', 1523540617);
         }
     }
 
-    /**
-     * @param int ...$parts
-     * @return string
-     */
     private function export(int ...$parts): string
     {
         return implode('.', $parts);

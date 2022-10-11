@@ -45,7 +45,7 @@ class AnnounceApiService
         $this->configuration = $configuration;
     }
 
-    public function getRelease(string $version)
+    public function getRelease(string $version): ?Release
     {
         try {
             $variables = ['version' => $version];
@@ -64,7 +64,7 @@ class AnnounceApiService
         return $this->buildRelease($result);
     }
 
-    public function addRelease(Release $release)
+    public function addRelease(Release $release): void
     {
         try {
             $this->request(
@@ -84,7 +84,7 @@ class AnnounceApiService
         $this->deleteReleaseCache($release->getVersion());
     }
 
-    public function updateRelease(string $version, Release $release)
+    public function updateRelease(string $version, Release $release): void
     {
         if ($version !== $release->getVersion()) {
             throw new \LogicException(
@@ -114,7 +114,7 @@ class AnnounceApiService
         $this->deleteReleaseCache($release->getVersion());
     }
 
-    public function setReleaseNotes(string $version, ReleaseNotes $releaseNotes)
+    public function setReleaseNotes(string $version, ReleaseNotes $releaseNotes): void
     {
         try {
             $this->request(
@@ -133,11 +133,11 @@ class AnnounceApiService
         }
     }
 
-    public function deleteReleaseCache(string $version)
+    public function deleteReleaseCache(string $version): void
     {
         try {
             $variables = ['version' => $version];
-            $result = $this->request('deleteReleaseCache', $variables);
+            $this->request('deleteReleaseCache', $variables);
         } catch (GuzzleException $exception) {
             throw new \RuntimeException(
                 sprintf(
@@ -149,7 +149,7 @@ class AnnounceApiService
         }
     }
 
-    private function substitute(string $path, array $variables = [])
+    private function substitute(string $path, array $variables = []): string
     {
         $value = $this->variableResolveService->resolveDeep(
             $this->configuration,
@@ -175,14 +175,7 @@ class AnnounceApiService
         return $value;
     }
 
-    /**
-     * @param string $scope
-     * @param array $variables
-     * @param array $options
-     * @return array|null
-     * @throws GuzzleException
-     */
-    private function request(string $scope, array $variables = [], array $options = [])
+    private function request(string $scope, array $variables = [], array $options = []): ?array
     {
         try {
             $response = $this->client->request(
@@ -196,12 +189,12 @@ class AnnounceApiService
         return $this->json($response);
     }
 
-    private function json(ResponseInterface $response)
+    private function json(ResponseInterface $response): array
     {
         return json_decode((string)$response->getBody(), true);
     }
 
-    private function buildRelease(array $json = null)
+    private function buildRelease(array $json = null): ?Release
     {
         if (empty($json)) {
             return null;
@@ -217,12 +210,12 @@ class AnnounceApiService
         );
     }
 
-    private function buildHashCollection(array $json)
+    private function buildHashCollection(array $json): HashCollection
     {
         return new HashCollection($json);
     }
 
-    private function buildReleaseNotes(array $json = null)
+    private function buildReleaseNotes(array $json = null): ?ReleaseNotes
     {
         if (empty($json)) {
             return null;

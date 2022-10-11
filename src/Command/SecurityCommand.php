@@ -70,7 +70,7 @@ class SecurityCommand extends Command
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->collection = new Collection();
         $this->io = new SymfonyStyle($input, $output);
@@ -129,13 +129,14 @@ class SecurityCommand extends Command
         }
 
         $this->io->success('Done');
+        return 0;
     }
 
     /**
      * @param string $version
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    private function processVersion(string $version)
+    private function processVersion(string $version): void
     {
         $utc = new \DateTimeZone('UTC');
 
@@ -203,10 +204,6 @@ class SecurityCommand extends Command
         $this->io->writeln('done');
     }
 
-    /**
-     * @param string $packageName
-     * @return string
-     */
     private function getSecurityPath(string $packageName): string
     {
         $securityDirectory = $this->getApplication()->getSecurityDirectory();

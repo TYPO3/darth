@@ -41,7 +41,7 @@ class EltsUploader implements UploaderInterface
         return sprintf('Publishing as %s to %s', $this->userName, $this->packageLocation);
     }
 
-    public function upload(string $file, string $blobName)
+    public function upload(string $file, string $blobName): void
     {
         $fullPath = $this->packageLocation . $blobName;
         $remoteTargetDirectory = dirname($fullPath);
@@ -56,16 +56,14 @@ class EltsUploader implements UploaderInterface
 
     /**
      * Fixes permissions of the uploaded package
-     *
-     * @param string $remoteTargetDirectory
      */
-    private function createTargetDirectory(string $remoteTargetDirectory)
+    private function createTargetDirectory(string $remoteTargetDirectory): void
     {
         $subCommand = sprintf('[ -d %1$s ] || mkdir %1$s', escapeshellarg($remoteTargetDirectory));
         $this->executeRemoteCommand($subCommand);
     }
 
-    private function executeRemoteCommand(string $command)
+    private function executeRemoteCommand(string $command): void
     {
         $process = new Process(['ssh', '-t', $this->userName . '@' . $this->server, $command]);
         $process->run();

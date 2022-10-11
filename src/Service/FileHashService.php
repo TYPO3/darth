@@ -30,7 +30,7 @@ class FileHashService
         $this->workingDirectory = $workingDirectory;
     }
 
-    public function multiple(array $algorithmMap, array $fileMap)
+    public function multiple(array $algorithmMap, array $fileMap): array
     {
         $result = [];
         foreach ($fileMap as $fileKey => $filePattern) {

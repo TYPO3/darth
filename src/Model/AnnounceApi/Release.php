@@ -92,9 +92,6 @@ class Release implements \JsonSerializable
         return $this->version;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;

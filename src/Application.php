@@ -40,7 +40,6 @@ class Application extends \Symfony\Component\Console\Application
      * Fetches a file within the conf/ folder of this package.
      *
      * @param string $fileName
-     *
      * @return string the full filename + path
      */
     public function getConfigurationFileName(string $fileName): string
@@ -60,10 +59,9 @@ class Application extends \Symfony\Component\Console\Application
      * Mainly used to get the path to the working directory so Git can operate on this folder.
      *
      * @param bool $skipExistenceCheck if set, the method does not check if the folder contains a valid git repository
-     *
      * @return string the name of the folder with no trailing slash
      */
-    public function getWorkingDirectory($skipExistenceCheck = false): string
+    public function getWorkingDirectory(bool $skipExistenceCheck = false): string
     {
         $workingDirectory = getenv('WORKING_DIRECTORY');
         if (empty($workingDirectory)) {
@@ -140,10 +138,9 @@ class Application extends \Symfony\Component\Console\Application
      * Ensures that the folder exists as well.
      *
      * @param bool $resetHard if set, then the folder will be destroyed and re-created empty
-     *
      * @return string the full path to the publish directory with no trailing slash
      */
-    public function initializePublishDirectory($resetHard = false): string
+    public function initializePublishDirectory(bool $resetHard = false): string
     {
         $publishDirectory = getenv('PUBLISH_DIRECTORY');
         if (empty($publishDirectory)) {
@@ -179,7 +176,7 @@ class Application extends \Symfony\Component\Console\Application
      */
     public function getArtefactsDirectory(string $version): string
     {
-        $directory = $this->initializePublishDirectory(false) . '/' . ltrim($version, 'v') . '/' . getenv('ARTEFACTS_DIRECTORY');
+        $directory = $this->initializePublishDirectory() . '/' . ltrim($version, 'v') . '/' . getenv('ARTEFACTS_DIRECTORY');
         if (!@is_dir($directory)) {
             mkdir($directory);
         }
@@ -189,10 +186,8 @@ class Application extends \Symfony\Component\Console\Application
 
     /**
      * Removes and re-creates a directory - use with care, as it removes all contents and does not do a check.
-     *
-     * @param $directory
      */
-    public function resetDirectory($directory)
+    public function resetDirectory(string $directory): void
     {
         // remove any old info
         if (@is_dir($directory)) {

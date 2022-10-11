@@ -4,6 +4,7 @@
 
 composer.lock
 vendor/
+.phpunit.result.cache
 
 publish/
 working/

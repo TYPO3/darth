@@ -9,7 +9,6 @@ namespace TYPO3\Darth\Command;
  * file that was distributed with this source code.
  */
 
-use Composer\Semver\Semver;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Symfony\Component\Console\Command\Command;
@@ -106,7 +105,7 @@ class AnnounceCommand extends Command
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('Announce release to ' . getenv('ANNOUNCE_API_BASE_URL'));
@@ -231,7 +230,7 @@ class AnnounceCommand extends Command
         return $versionDirectory . '/RELEASE_NOTES.md';
     }
 
-    private function createReleaseNotesFile(string $releaseNotesPath, array $variables)
+    private function createReleaseNotesFile(string $releaseNotesPath, array $variables): void
     {
         $template = $this->getApplication()->getConfigurationFileName(
             'RELEASE_NOTES.md'
@@ -269,7 +268,7 @@ class AnnounceCommand extends Command
         );
     }
 
-    private function readSignatureDate(string $version)
+    private function readSignatureDate(string $version): ?\DateTime
     {
         $process = new Process(
             'gpg --verify README.md',
@@ -308,61 +307,6 @@ class AnnounceCommand extends Command
 
     private function getConfiguration()
     {
-        $configuration = $this->getApplication()->getConfiguration('announce');
-        return $configuration;
-    }
-
-    /**
-     * @param string $version
-     * @param array $configuration
-     * @param string $path
-     * @return array
-     * @deprecated Not used anymore
-     */
-    private function inferenceVersionConstraint(string $version, array $configuration, string $path)
-    {
-        $subjectReference = &$this->referencePath($configuration, $path);
-        $candidate = $this->evaluate(array_keys($subjectReference), $version);
-
-        $subjectReference = array_merge(
-            $subjectReference['default'] ?? [],
-            $subjectReference[$candidate] ?? []
-        );
-
-        unset($subjectReference);
-        return $configuration;
-    }
-
-    private function &referencePath(array &$subject, string $path, $delimiter = '.')
-    {
-        $steps = explode($delimiter, $path);
-        $result = &$subject;
-        foreach ($steps as $step) {
-            $result = &$result[$step];
-        }
-        return $result;
-    }
-
-    private function evaluate(array $candidates, string $version)
-    {
-        $matches = array_filter(
-            $candidates,
-            function (string $candidate) use ($version) {
-                return $candidate !== 'default'
-                    && Semver::satisfies($version, $candidate);
-            }
-        );
-        if (count($matches) > 1) {
-            throw new \LogicException(
-                sprintf(
-                    'Found more than one match for "%s": "%s"',
-                    $version,
-                    implode('", "', $matches)
-                ),
-                1522877130
-            );
-        }
-        $matches = array_values($matches);
-        return $matches[0] ?? null;
+        return $this->getApplication()->getConfiguration('announce');
     }
 }

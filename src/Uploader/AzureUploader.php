@@ -35,7 +35,7 @@ class AzureUploader implements UploaderInterface
         return 'Using container ' . $this->containerName;
     }
 
-    public function upload(string $file, string $blobName)
+    public function upload(string $file, string $blobName): void
     {
         $content = fopen($file, (substr($file, -2) === 'md') ? 'r' : 'rb');
         $this->client->createBlockBlob($this->containerName, $blobName, $content);

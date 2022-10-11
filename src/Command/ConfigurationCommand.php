@@ -51,7 +51,7 @@ class ConfigurationCommand extends Command
             ->setHeaders(['key', 'getenv($key)'])
             ->setRows(
                 array_map(
-                    function(string $key) use ($dotEnvAssignments) {
+                    function(string $key) {
                         return [
                             $key,
                             $this->stringBreak(getenv($key), 50),
@@ -63,6 +63,7 @@ class ConfigurationCommand extends Command
 
         $table->render();
         $this->io->newLine();
+        return 0;
     }
 
     /**

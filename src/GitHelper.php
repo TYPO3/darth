@@ -66,11 +66,10 @@ class GitHelper
      * Initializes the working directory of an existing (!) git repository
      * and resets the current state to the latest version, then also does a fetch() command.
      *
-     * @param string $revision the revision to be checked out (optionally)
-     *
+     * @param string|null $revision the revision to be checked out (optionally)
      * @return GitWorkingCopy the initialized GitWorkingCopy object to do tasks on it
      */
-    public function initializeCleanWorkingCopy($revision = null): GitWorkingCopy
+    public function initializeCleanWorkingCopy(string $revision = null): GitWorkingCopy
     {
         $gitWrapper = new GitWrapper();
         if ($this->addOutputListener) {
@@ -173,7 +172,7 @@ class GitHelper
     /**
      * Returns all commit log entries (as --oneline) from the current head to the previous tag found before HEAD.
      *
-     * @param string $previousTag
+     * @param string|null $previousTag
      * @return array each change log entry in one part of the array
      */
     public function getChangeLogUntilPreviousTag(string $previousTag = null): array
@@ -288,7 +287,7 @@ class GitHelper
      *
      * @return string the exact version number to be used
      */
-    public function findNextVersion($givenVersion): string
+    public function findNextVersion(string $givenVersion): string
     {
         $specificVersionGiven = count(explode('.', $givenVersion)) > 2;
 

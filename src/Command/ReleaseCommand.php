@@ -82,7 +82,7 @@ class ReleaseCommand extends Command
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('The day has come - it is release time! You have just pressed the button');
@@ -243,9 +243,9 @@ class ReleaseCommand extends Command
      * @param array  $configuration
      * @param bool $sprintRelease
      * @param string $nextVersion
-     * @param string $currentVersion      current version, used "-dev" flag for replacements
+     * @param string|null $currentVersion      current version, used "-dev" flag for replacements
      */
-    protected function updateFilesWithVersions(string $workingDirectory, array $configuration, bool $sprintRelease, string $nextVersion, string $currentVersion = null)
+    protected function updateFilesWithVersions(string $workingDirectory, array $configuration, bool $sprintRelease, string $nextVersion, string $currentVersion = null): void
     {
         $versionParts = explode('.', $nextVersion);
         $nextMinorVersion = $versionParts[0] . '.' . $versionParts[1];

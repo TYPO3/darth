@@ -9,22 +9,25 @@
 		}
 	],
 	"require": {
-		"php": "^7.0",
-		"symfony/finder": "^3.3",
-		"symfony/dotenv": "^3.3",
-		"symfony/console": "^3.3",
-		"symfony/yaml": "^3.3",
+		"php": "^7.2",
+		"ext-json": "*",
 		"cpliakas/git-wrapper": "^1.7",
-		"typo3fluid/fluid": "^2.3",
-		"microsoft/azure-storage": "^0.16.0"
+		"microsoft/azure-storage": "^0.16.0",
+		"symfony/console": "^3.3",
+		"symfony/dotenv": "^3.3",
+		"symfony/finder": "^3.3",
+		"symfony/yaml": "^3.3",
+		"typo3fluid/fluid": "^2.7"
 	},
 	"require-dev": {
-		"friendsofphp/php-cs-fixer": "^2.3",
-		"phpunit/phpunit": "^6.2"
+		"phpunit/phpunit": "^9"
 	},
 	"autoload": {
 		"psr-4": {
 			"TYPO3\\Darth\\": "src/"
 		}
+	},
+	"config": {
+		"sort-packages": true
 	}
 }

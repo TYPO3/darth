@@ -69,14 +69,14 @@ class PackageCommand extends Command
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('You\'re almost there! Lets build some packages for the non-composer folks.');
         $this->gitHelper = new GitHelper($this->getApplication()->getWorkingDirectory(), $this->io->isVerbose());
 
         $version = $input->getArgument('version');
-	// If no revision is given, use the version with a "v" prefix, like "v10.4.11" as this is the tag that was set in the release command
+        // If no revision is given, use the version with a "v" prefix, like "v10.4.11" as this is the tag that was set in the release command
         $revision = $input->getArgument('revision') ?: 'v' . $version;
         $releaseType = $input->getOption('type');
         if (!$releaseType) {
@@ -153,6 +153,7 @@ class PackageCommand extends Command
 
         $this->io->success('All done. Just upload it now with the "publish" process.');
         $this->io->comment('./bin/darth publish ' . $version);
+        return 0;
     }
 
     /**
@@ -179,12 +180,8 @@ class PackageCommand extends Command
      * the publishing directory.
      *
      * Then triggers a composer install command, afterwards removes files which are relevant for development/testing
-     *
-     * @param GitWorkingCopy $git
-     * @param string         $revision
-     * @param string         $sourceCodeDirectory
      */
-    protected function prepare(GitWorkingCopy $git, string $revision, string $sourceCodeDirectory)
+    protected function prepare(GitWorkingCopy $git, string $revision, string $sourceCodeDirectory): void
     {
         $archiveFile = dirname($sourceCodeDirectory) . '/gitarchive-' . date('Ymd-His') . '-' . $revision . '.tar';
 
@@ -204,10 +201,8 @@ class PackageCommand extends Command
 
     /**
      * Runs composer install (set via environment variable).
-     *
-     * @param string $directory
      */
-    protected function runComposerCommand(string $directory)
+    protected function runComposerCommand(string $directory): void
     {
         $composerCommand = getenv('COMPOSER_INSTALL_COMMAND');
         $this->io->note('Now running ' . $composerCommand);
@@ -216,10 +211,8 @@ class PackageCommand extends Command
 
     /**
      * Checks for all file patterns within the configuration file and removes the files.
-     *
-     * @param string $directory
      */
-    protected function removeFilesExcludedForPackaging(string $directory)
+    protected function removeFilesExcludedForPackaging(string $directory): void
     {
         $this->io->note('Removing test, development and example files not handled properly by git/composer');
         $excludeFilesFromPackaging = $this->getApplication()->getConfiguration('excludeFromPackaging');
@@ -256,7 +249,7 @@ class PackageCommand extends Command
      *
      * @param string $directory the full path to the directory containing all sources codes
      */
-    protected function setPermissionsForFilesForPackaging(string $directory)
+    protected function setPermissionsForFilesForPackaging(string $directory): void
     {
         // @todo: unsetting the permissions
         // find ${project-permissions.directory} -type f | xargs chmod a-x
@@ -292,7 +285,7 @@ class PackageCommand extends Command
      *
      * @return array
      */
-    protected function createAndSignArtefacts(string $sourceCodeDirectory, $version): array
+    protected function createAndSignArtefacts(string $sourceCodeDirectory, string $version): array
     {
         $artefactDirectory = $this->getApplication()->getArtefactsDirectory($version);
         $artefactBaseName = basename($sourceCodeDirectory);
