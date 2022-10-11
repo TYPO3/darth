@@ -179,7 +179,7 @@ class AnnounceCommand extends Command
         if ($interactive) {
             $this->io->note(
                 'The current release notes file has been prepared for further '
-                . ' adjustments at ' . $releaseNotesPath
+                . 'adjustments at ' . $releaseNotesPath
             );
             $answer = $this->io->confirm(
                 'All modified? Ready to continue?',

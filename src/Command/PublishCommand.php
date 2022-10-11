@@ -105,7 +105,8 @@ class PublishCommand extends Command
         if ($hasErrors) {
             $this->io->error('Some files could not be uploaded, you should probably upload them manually from ' . $artefactsDirectory);
         } else {
-            $this->io->success('All done. Enjoy the rest of your day!');
+            $this->io->success('All done. Only the announcement is missing now!');
+            $this->io->comment('./bin/darth announce ' . ltrim($version, 'v') . ' [LINK]');
         }
     }
 

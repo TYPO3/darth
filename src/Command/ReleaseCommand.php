@@ -133,7 +133,7 @@ class ReleaseCommand extends Command
             $this->updateFilesWithVersions($workingDirectory, $filesToManipulate, $sprintRelease, $nextVersion);
         }
 
-        // Now commit with "[RELEASE] Released TYPO3 v.x.x"
+        // Now commit with "[RELEASE] Released TYPO3 x.y.z"
         $commitMessage = '[RELEASE] Release of TYPO3 ' . $nextVersion;
         if ($input->hasOption('commitMessage') && $input->getOption('commitMessage')) {
             $commitMessage .= "\n\n" . $input->getOption('commitMessage');
@@ -231,6 +231,7 @@ class ReleaseCommand extends Command
         }
 
         $this->io->success('Release is done, now go on with packaging by using the "package" command');
+        $this->io->comment('./bin/darth package  ' . $nextVersion);
 
         return 0;
     }
