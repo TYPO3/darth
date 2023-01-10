@@ -56,6 +56,7 @@ class Version implements \JsonSerializable
     /**
      * @return mixed|string
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return (string)$this;

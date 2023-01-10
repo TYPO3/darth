@@ -14,7 +14,7 @@ use Symfony\Component\Dotenv\Dotenv;
 class DotEnvService
 {
     /**
-     * @var string
+     * @var array
      */
     private $paths = [];
 
@@ -30,6 +30,7 @@ class DotEnvService
             dirname(dirname(__DIR__)) . '/.env',
         ];
         $this->dotEnv = new Dotenv();
+        $this->dotEnv->usePutenv();
     }
 
     public function load()
