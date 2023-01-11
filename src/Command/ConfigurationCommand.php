@@ -38,10 +38,10 @@ class ConfigurationCommand extends Command
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
-        $this->io->title('Configuraton - Let\'s see whether everthing is configured.');
+        $this->io->title('Configuraton - Let\'s see whether everything is configured.');
 
         $dotEnvService = new DotEnvService();
         $dotEnvAssignments = $dotEnvService->parse();
@@ -63,6 +63,7 @@ class ConfigurationCommand extends Command
 
         $table->render();
         $this->io->newLine();
+        return 0;
     }
 
     /**

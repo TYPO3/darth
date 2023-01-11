@@ -106,7 +106,7 @@ class AnnounceCommand extends Command
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('Announce release to ' . getenv('ANNOUNCE_API_BASE_URL'));
@@ -209,6 +209,7 @@ class AnnounceCommand extends Command
         $this->io->success(
             sprintf('Release %s announced', $release->getVersion())
         );
+        return 0;
     }
 
     /**
