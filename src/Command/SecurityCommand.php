@@ -129,6 +129,7 @@ class SecurityCommand extends Command
         }
 
         $this->io->success('Done');
+        return 0;
     }
 
     /**
@@ -201,7 +202,6 @@ class SecurityCommand extends Command
         }
 
         $this->io->writeln('done');
-        return 0;
     }
 
     /**

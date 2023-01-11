@@ -196,7 +196,7 @@ class Application extends \Symfony\Component\Console\Application
     {
         // remove any old info
         if (@is_dir($directory)) {
-            $process = new Process('sudo rm -rf ' . $directory);
+            $process = Process::fromShellCommandline('sudo rm -rf ' . $directory);
             $process->run();
             if (!$process->isSuccessful()) {
                 throw new ProcessFailedException($process);

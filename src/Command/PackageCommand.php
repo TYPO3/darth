@@ -11,7 +11,7 @@ namespace TYPO3\Darth\Command;
  * file that was distributed with this source code.
  */
 
-use GitWrapper\GitWorkingCopy;
+use Gitonomy\Git\Repository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -69,7 +69,7 @@ class PackageCommand extends Command
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('You\'re almost there! Lets build some packages for the non-composer folks.');
@@ -102,8 +102,8 @@ class PackageCommand extends Command
 
         // Generate the ChangeLog
         // Returns the last tag of this branch before the current revision
-        $this->io->note('Creating the ChangeLog based on the git history');
         $previousTag = $this->gitHelper->getPreviousTagName();
+        $this->io->note('Creating the ChangeLog based on the git history since ' . $previousTag);
         $changeLog = $this->gitHelper->getChangeLogUntilPreviousTag();
         $this->io->note(['The following changes have been made since TYPO3 ' . $previousTag, implode("\n", $changeLog)]);
 
@@ -153,6 +153,7 @@ class PackageCommand extends Command
 
         $this->io->success('All done. Just upload it now with the "publish" process.');
         $this->io->comment('./bin/darth publish ' . $version);
+        return 0;
     }
 
     /**
@@ -180,16 +181,16 @@ class PackageCommand extends Command
      *
      * Then triggers a composer install command, afterwards removes files which are relevant for development/testing
      *
-     * @param GitWorkingCopy $git
-     * @param string         $revision
-     * @param string         $sourceCodeDirectory
+     * @param Repository $git
+     * @param string $revision
+     * @param string $sourceCodeDirectory
      */
-    protected function prepare(GitWorkingCopy $git, string $revision, string $sourceCodeDirectory)
+    protected function prepare(Repository $git, string $revision, string $sourceCodeDirectory)
     {
         $archiveFile = dirname($sourceCodeDirectory) . '/gitarchive-' . date('Ymd-His') . '-' . $revision . '.tar';
 
         // Note: git-archive also excludes files mentioned in .gitattributes
-        $git->archive('--format', 'tar', '-o', $archiveFile, $revision);
+        $git->run('archive', ['--format', 'tar', '-o', $archiveFile, $revision]);
 
         // Extract and remove the GIT archive
         $this->runProcess(getenv('TAR_COMMAND') . ' xf ' . $archiveFile . ' && rm ' . $archiveFile, $sourceCodeDirectory);
@@ -327,8 +328,10 @@ class PackageCommand extends Command
 
     private function runProcess(...$processArguments): Process
     {
-        $process = new Process(...$processArguments);
-        $process->run();
+        $process = Process::fromShellCommandline(...$processArguments);
+        $process->run(function ($type, $buffer) {
+            $this->io->write($buffer);
+        });
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }

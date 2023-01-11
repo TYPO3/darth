@@ -181,10 +181,7 @@ class AnnounceCommand extends Command
                 'The current release notes file has been prepared for further '
                 . 'adjustments at ' . $releaseNotesPath
             );
-            $answer = $this->io->confirm(
-                'All modified? Ready to continue?',
-                true
-            );
+            $answer = $this->io->confirm('All modified? Ready to continue?');
             if (!$answer) {
                 return 1;
             }
@@ -272,7 +269,7 @@ class AnnounceCommand extends Command
 
     private function readSignatureDate(string $version)
     {
-        $process = new Process(
+        $process = Process::fromShellCommandline(
             'gpg --verify README.md',
             $this->getApplication()->getArtefactsDirectory($version)
         );

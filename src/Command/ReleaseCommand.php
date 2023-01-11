@@ -113,7 +113,7 @@ class ReleaseCommand extends Command
         );
 
         if ($isInteractive) {
-            $answer = $this->io->confirm('Is the information above correct?', true);
+            $answer = $this->io->confirm('Is the information above correct?');
             if (!$answer) {
                 return 1;
             }
@@ -121,7 +121,7 @@ class ReleaseCommand extends Command
 
         // Create a new local branch tracking the remote branch
         $localBranchName = 'release-' . date('Ymd-His') . '-v' . str_replace('.', 'dot', $nextVersion);
-        $git->checkout('-b', $localBranchName, '--track', $remoteBranchWithRemoteName);
+        $git->run('checkout', ['-b', $localBranchName, '--track', $remoteBranchWithRemoteName]);
 
         $commitHashBeforeRelease = $this->gitHelper->getCurrentRevision();
         if ($this->io->isVerbose()) {
@@ -138,7 +138,7 @@ class ReleaseCommand extends Command
         if ($input->hasOption('commitMessage') && $input->getOption('commitMessage')) {
             $commitMessage .= "\n\n" . $input->getOption('commitMessage');
         }
-        $git->commit('-a', '-S', '--allow-empty', '-m', trim($commitMessage));
+        $git->run('commit', ['-a', '-S', '--allow-empty', '-m', trim($commitMessage)]);
         $localReleaseCommitHash = $this->gitHelper->getCurrentRevision();
         $this->io->success('Release commit is ' . $localReleaseCommitHash . ' with message ' . "\n\n" . $commitMessage);
 
@@ -156,11 +156,11 @@ class ReleaseCommand extends Command
             $this->gitHelper->approveWithGerrit($localReleaseCommitHash);
 
             // Commit is pushed, now wait until gerrit and the remote git repository are in sync again
-            $git->reset('--hard', $remoteBranchWithRemoteName); // now it should be back to $commitHashBeforeRelease
-            $git->pull();
+            $git->run('reset', ['--hard', $remoteBranchWithRemoteName]); // now it should be back to $commitHashBeforeRelease
+            $git->run('pull');
             $attempts = 0;
             while ($this->gitHelper->getCurrentRevision() === $commitHashBeforeRelease) {
-                $git->pull();
+                $git->run('pull');
                 $this->io->note('Waiting for remote git repository to be updated. Attempt #' . ($attempts+1));
                 sleep(10);
                 if (++$attempts > 60) {
@@ -188,7 +188,7 @@ class ReleaseCommand extends Command
         // Create tags
         $tagMessage = 'Release of TYPO3 ' . $nextVersion;
         foreach ($tagsToAdd as $tagName) {
-            $git->tag('-s', '-f', '-m', $tagMessage, $tagName);
+            $git->run('tag', ['-s', '-f', '-m', $tagMessage, $tagName]);
         }
         $this->io->success('Added the signed tag(s): ' . implode(', ', $tagsToAdd));
 
@@ -196,7 +196,7 @@ class ReleaseCommand extends Command
         foreach ($tagsToAdd as $tagName) {
             $this->io->success('Pushing tag ' . $tagName . ' to origin');
             if (!$dryRun) {
-                $git->push('origin', $tagName);
+                $git->run('push', ['origin', $tagName]);
             } else {
                 $this->io->comment('Skipped!');
             }
@@ -208,7 +208,7 @@ class ReleaseCommand extends Command
 
         if ($sprintRelease) {
             $this->io->note('Update composer.lock file');
-            $process = new Process(
+            $process = Process::fromShellCommandline(
                 'composer update --lock',
                 $this->getApplication()->getWorkingDirectory()
             );
@@ -221,7 +221,7 @@ class ReleaseCommand extends Command
 
         $commitMessage = '[TASK] Set TYPO3 version to ' . $upcomingVersion . '-dev';
         $this->io->note('Committing ' . $commitMessage . ' with the latest updates to set the next version.');
-        $git->commit('-a', '--allow-empty', '-m', $commitMessage);
+        $git->run('commit', ['-a', '--allow-empty', '-m', $commitMessage]);
 
         $this->io->note('Pushing to gerrit.');
         if (!$dryRun) {
