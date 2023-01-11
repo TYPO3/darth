@@ -11,15 +11,12 @@ namespace TYPO3\Darth;
  * file that was distributed with this source code.
  */
 
-use GitWrapper\Event\GitOutputStreamListener;
-use GitWrapper\GitException;
-use GitWrapper\GitWorkingCopy;
-use GitWrapper\GitWrapper;
+use Gitonomy\Git\Repository;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 /**
- * Support to check and fetch certain tasks, usually in conjunction with the GitWorkingCopy object.
+ * Support to check and fetch certain tasks, usually in conjunction with the Git repository object.
  */
 class GitHelper
 {
@@ -30,59 +27,44 @@ class GitHelper
 
     /**
      * The absolute path to the local GIT repository.
-     *
-     * @var string
      */
-    private $workingDirectory;
+    private string $workingDirectory;
 
     /**
-     * Whether the GitWrapper that creates the git object should have the output listener added.
-     *
-     * @var bool
+     * Whether the Git Repository that creates the git object should have the output listener added.
      */
-    private $addOutputListener;
+    private bool $isVerbose;
 
     /**
      * The current instance when initialized to be worked on.
-     *
-     * @var GitWorkingCopy
      */
-    private $git;
+    private ?Repository $git;
 
     /**
      * Sets up the working directory structure needed to continue, usually called right before
      * "initializeCleanWorkingCopy()".
-     *
-     * @param string $workingDirectory
-     * @param bool   $isVerbose
      */
-    public function __construct(string $workingDirectory = null, bool $isVerbose = null)
+    public function __construct(string $workingDirectory, bool $isVerbose)
     {
         $this->workingDirectory = $workingDirectory;
-        $this->addOutputListener = $isVerbose;
+        $this->isVerbose = $isVerbose;
     }
 
     /**
      * Initializes the working directory of an existing (!) git repository
      * and resets the current state to the latest version, then also does a fetch() command.
      *
-     * @param string $revision the revision to be checked out (optionally)
-     *
-     * @return GitWorkingCopy the initialized GitWorkingCopy object to do tasks on it
+     * @param string|null $revision the revision to be checked out (optionally)
+     * @return Repository the initialized Git repository object to do tasks on it
      */
-    public function initializeCleanWorkingCopy($revision = null): GitWorkingCopy
+    public function initializeCleanWorkingCopy(string $revision = null): Repository
     {
-        $gitWrapper = new GitWrapper();
-        if ($this->addOutputListener) {
-            $gitOutputListener = new GitOutputStreamListener();
-            $gitWrapper->addOutputListener($gitOutputListener);
-        }
-        $this->git = $gitWrapper->workingCopy($this->workingDirectory);
-        $this->git->clean('-d', '-f')
-            ->reset('--hard')
-            ->fetch('--tags');
+        $this->git = new Repository($this->workingDirectory, ['debug' => $this->isVerbose]);
+        $this->git->run('clean', ['-d', '-f']);
+        $this->git->run('reset', ['--hard']);
+        $this->git->run('fetch', ['--tags']);
         if ($revision) {
-            $this->git->checkout($revision);
+            $this->git->run('checkout', [$revision]);
         }
 
         return $this->git;
@@ -97,10 +79,9 @@ class GitHelper
     public function getSigningKey(): string
     {
         try {
-            $this->git->clearOutput();
-            $this->git->config('user.signingkey');
-            $signingKey = trim($this->git->getOutput());
-        } catch (GitException $e) {
+            $signingKey = $this->git->run('config', ['user.signingkey']);
+            $signingKey = trim($signingKey);
+        } catch (\Gitonomy\Git\Exception\RuntimeException $e) {
         }
 
         if (empty($signingKey) || !is_string($signingKey)) {
@@ -117,10 +98,7 @@ class GitHelper
      */
     public function getCurrentRevision(): string
     {
-        $this->git->clearOutput();
-        $this->git->run(['rev-parse', 'HEAD']);
-
-        return trim($this->git->getOutput());
+        return trim($this->git->run('rev-parse', ['HEAD']));
     }
 
     /**
@@ -136,9 +114,10 @@ class GitHelper
         $versionParts = explode('.', $nextVersion);
         $nextMinorVersion = $versionParts[0] . '.' . $versionParts[1];
 
-        $branches = $this->git->getBranches();
+        $branches = $this->git->getReferences()->getBranches();
         $usedBranch = null;
-        foreach ($branches as $branch) {
+        foreach ($branches as $branchObj) {
+            $branch = $branchObj->getName();
             if (preg_match('/remotes\/origin\/([A-z0-9_-]+' . str_replace('.', '-', $nextMinorVersion) . '|' . str_replace('.', '\.', $nextMinorVersion) . ')/', $branch)) {
                 // subtract the "remotes/" part
                 $usedBranch = substr($branch, 8);
@@ -163,17 +142,14 @@ class GitHelper
      */
     public function getPreviousTagName(): string
     {
-        $this->git->clearOutput();
-        $this->git->run(['describe', '--abbrev=0', '--match=*.*.*', 'HEAD^']);
-        $previousTag = $this->git->getOutput();
-
+        $previousTag = $this->git->run('describe', ['--abbrev=0', '--match=*.*.*', 'HEAD^']);
         return trim($previousTag);
     }
 
     /**
      * Returns all commit log entries (as --oneline) from the current head to the previous tag found before HEAD.
      *
-     * @param string $previousTag
+     * @param null|string $previousTag
      * @return array each change log entry in one part of the array
      */
     public function getChangeLogUntilPreviousTag(string $previousTag = null): array
@@ -182,18 +158,17 @@ class GitHelper
             $previousTag = $this->getPreviousTagName();
         }
 
-        $options = [
-            'oneline' => true,
-            'date' => 'short',
+        $arguments = [
+            $previousTag . '..HEAD',
+            '--oneline',
+            '--date=short',
         ];
         $pretty = getenv('GIT_CHANGELOG_PRETTY');
         if (!empty($pretty)) {
-            $options['pretty'] = $pretty;
+            $arguments[] = '--pretty=' . $pretty;
         }
 
-        $this->git->clearOutput();
-        $this->git->log($previousTag . '..HEAD', $options);
-        $changeLog = $this->git->getOutput();
+        $changeLog = $this->git->run('log', $arguments);
 
         return explode("\n", trim($changeLog));
     }
@@ -213,21 +188,21 @@ class GitHelper
         }
 
         $options = [
-            'pretty' => '%s' . self::LOG_DELIMITER_FIELD
+            $previousTag . '..HEAD',
+            '--pretty=%s' . self::LOG_DELIMITER_FIELD
                 . '%b' . self::LOG_DELIMITER_FIELD
                 . '%ci' . self::LOG_DELIMITER_FIELD
                 . '///' . self::LOG_DELIMITER_ITEM,
         ];
         if ($grep !== null) {
-            $options['grep'] = $grep;
+            $options[] = '--grep=' . $grep;
         }
 
-        $this->git->clearOutput();
-        $this->git->log($previousTag . '..HEAD', $options);
+        $output = $this->git->run('log', $options);
         $items = array_filter(
             array_map(
                 'trim',
-                explode(self::PHP_DELIMITER_ITEM, $this->git->getOutput())
+                explode(self::PHP_DELIMITER_ITEM, $output)
             )
         );
 
@@ -256,9 +231,11 @@ class GitHelper
      */
     protected function getVersionTags(): array
     {
-        $this->git->clearOutput();
-        $this->git->tag('-l');
-        $tags = explode("\n", $this->git->getOutput());
+        $tagObjects = $this->git->getReferences()->getTags();
+        $tags = [];
+        foreach ($tagObjects as $tagObject) {
+            $tags[] = $tagObject->getName();
+        }
         rsort($tags);
         $finalTags = [];
         foreach ($tags as $tagName) {
@@ -285,10 +262,9 @@ class GitHelper
      * otherwise throws an exception.
      *
      * @param string $givenVersion can be "8.7" or "8.7.4"
-     *
      * @return string the exact version number to be used
      */
-    public function findNextVersion($givenVersion): string
+    public function findNextVersion(string $givenVersion): string
     {
         $specificVersionGiven = count(explode('.', $givenVersion)) > 2;
 
@@ -335,7 +311,7 @@ class GitHelper
      */
     public function pushToGerrit(string $remoteBranch): void
     {
-        $this->git->push('origin', 'HEAD:refs/for/' . $remoteBranch);
+        $this->git->run('push', ['origin', 'HEAD:refs/for/' . $remoteBranch]);
     }
 
     /**
@@ -345,7 +321,7 @@ class GitHelper
     {
         // Auto approve by gerrit
         if (getenv('GERRIT_AUTO_APPROVE_COMMAND')) {
-            $process = new Process(getenv('GERRIT_AUTO_APPROVE_COMMAND') . ' ' . $commitHash, $this->workingDirectory);
+            $process = Process::fromShellCommandline(getenv('GERRIT_AUTO_APPROVE_COMMAND') . ' ' . $commitHash, $this->workingDirectory);
             $process->run();
             if (!$process->isSuccessful()) {
                 throw new ProcessFailedException($process);

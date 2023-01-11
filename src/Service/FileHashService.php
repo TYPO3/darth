@@ -49,7 +49,7 @@ class FileHashService
     public function execute(string $algorithmName, string $filePattern): string
     {
         $command = $this->getCommand($algorithmName, $filePattern);
-        $process = new Process($command, $this->workingDirectory);
+        $process = Process::fromShellCommandline($command, $this->workingDirectory);
         $process->run();
         $process->run();
         if (!$process->isSuccessful()) {

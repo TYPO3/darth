@@ -11,8 +11,6 @@ namespace TYPO3\Darth\Command;
  * file that was distributed with this source code.
  */
 
-use GitWrapper\Event\GitOutputStreamListener;
-use GitWrapper\GitWrapper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -32,11 +30,6 @@ class InitializeCommand extends Command
      * @var SymfonyStyle
      */
     private $io;
-
-    /**
-     * @var GitHelper
-     */
-    private $gitHelper;
 
     /**
      * {@inheritdoc}
@@ -63,19 +56,16 @@ class InitializeCommand extends Command
 
         // Clone the remote git repository
         $this->io->note('Re-creating the git repository via cloning from ' . getenv('GIT_REMOTE_REPOSITORY') . '. This might take a while.');
-        $gitWrapper = new GitWrapper();
-        $gitWrapper->addOutputListener(new GitOutputStreamListener());
-        $gitWrapper->setTimeout(0);
-        $git = $gitWrapper->cloneRepository(getenv('GIT_REMOTE_REPOSITORY'), $workingDirectory);
+        $gitRepository = \Gitonomy\Git\Admin::cloneTo($workingDirectory, getenv('GIT_REMOTE_REPOSITORY'), false, ['process_timeout' => 0]);
 
         $this->io->note('Adding the push url and the gerrit commit hook');
         if (getenv('GIT_REMOTE_PUSH_URL')) {
-            $git->config('remote.origin.pushurl', getenv('GIT_REMOTE_PUSH_URL'));
+            $gitRepository->run('config', ['remote.origin.pushurl', getenv('GIT_REMOTE_PUSH_URL')]);
         }
 
         // Download the latest Gerrit commit hook
         if (getenv('GERRIT_COMMIT_HOOK')) {
-            $process = new Process(getenv('GERRIT_COMMIT_HOOK'), $workingDirectory);
+            $process = Process::fromShellCommandline(getenv('GERRIT_COMMIT_HOOK'), $workingDirectory);
             $process->run();
             if (!$process->isSuccessful()) {
                 throw new ProcessFailedException($process);
@@ -83,9 +73,9 @@ class InitializeCommand extends Command
         }
 
         // Check if the signing key is set
-        $this->gitHelper = new GitHelper($this->getApplication()->getWorkingDirectory(), $this->io->isVerbose());
-        $this->gitHelper->initializeCleanWorkingCopy();
-        $this->gitHelper->getSigningKey();
+        $gitHelper = new GitHelper($this->getApplication()->getWorkingDirectory(), $this->io->isVerbose());
+        $gitHelper->initializeCleanWorkingCopy();
+        $gitHelper->getSigningKey();
 
         $this->io->section('Step 2: Clean up the publishing directory');
         $this->getApplication()->initializePublishDirectory(true);
@@ -95,6 +85,7 @@ class InitializeCommand extends Command
         $this->io->warning('Todo: Check if shasum, gpg, composer is in place.');
 
         $this->io->success('All set. You can now do releases by calling the "release" command');
+        return 0;
     }
 
     /**
