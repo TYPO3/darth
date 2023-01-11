@@ -70,7 +70,7 @@ class SecurityCommand extends Command
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->collection = new Collection();
         $this->io = new SymfonyStyle($input, $output);
@@ -201,6 +201,7 @@ class SecurityCommand extends Command
         }
 
         $this->io->writeln('done');
+        return 0;
     }
 
     /**

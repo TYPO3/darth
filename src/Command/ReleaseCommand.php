@@ -82,7 +82,7 @@ class ReleaseCommand extends Command
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('The day has come - it is release time! You have just pressed the button');
