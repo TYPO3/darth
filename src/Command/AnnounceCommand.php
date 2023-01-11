@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace TYPO3\Darth\Command;
 
@@ -148,7 +149,7 @@ class AnnounceCommand extends Command
         $fileHashService = new FileHashService(
             [
                 'sha' => getenv('CHECKSUM_SHA_COMMAND'),
-                'md5' => getenv('CHECKSUM_MD5_COMMAND')
+                'md5' => getenv('CHECKSUM_MD5_COMMAND'),
             ],
             $this->getApplication()->getArtefactsDirectory($version)
         );
@@ -248,7 +249,7 @@ class AnnounceCommand extends Command
                 'Did not find any content blocks',
                 1522937252
             );
-        };
+        }
 
         $data = array_combine(
             $matches['identifier'],
@@ -294,7 +295,7 @@ class AnnounceCommand extends Command
         $password = getenv('ANNOUNCE_API_AUTH_PASSWORD');
 
         $settings = [
-            'base_uri' => getenv('ANNOUNCE_API_BASE_URL')
+            'base_uri' => getenv('ANNOUNCE_API_BASE_URL'),
         ];
 
         if (!empty($username) && !empty($password)) {

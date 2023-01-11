@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace TYPO3\Darth\Model\SecurityAdvisory;
 
@@ -47,8 +48,7 @@ class Advisory
         string $title,
         string $link,
         string $cve = null
-    )
-    {
+    ) {
         $this->advisoryId = $advisory;
         $this->title = $title;
         $this->link = $link;

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace TYPO3\Darth\Model\AnnounceApi;
 
@@ -54,8 +55,7 @@ class Release implements \JsonSerializable
         HashCollection $zipPackage,
         ReleaseNotes $releaseNotes = null,
         bool $elts = false
-    )
-    {
+    ) {
         $this->version = $version;
         $this->type = $type;
         $this->date = $date;

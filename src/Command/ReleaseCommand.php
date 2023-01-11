@@ -76,7 +76,7 @@ class ReleaseCommand extends Command
                 InputOption::VALUE_OPTIONAL,
                 'If this option is set, the user will be prompted, enabled by default',
                 true
-        );
+            );
     }
 
     /**
@@ -322,7 +322,7 @@ class ReleaseCommand extends Command
                 }
 
                 if ($fileContents !== $updatedFileContents && $updatedFileContents !== false) {
-                    file_put_contents((string) $foundFile, $updatedFileContents);
+                    file_put_contents((string)$foundFile, $updatedFileContents);
                     if ($this->io->isVerbose()) {
                         $this->io->writeln('Updated ' . $fileDetails['type'] . ' for file ' . $foundFile);
                     }

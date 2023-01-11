@@ -86,11 +86,11 @@ class PublishCommand extends Command
         $finder = new Finder();
         $finder->in($artefactsDirectory)->files()->depth(0);
         foreach ($finder as $file) {
-            $blobName = $blobPrefix . '/' . basename((string) $file);
+            $blobName = $blobPrefix . '/' . basename((string)$file);
             $this->io->note('Uploading to ' . $blobName);
             try {
                 $uploader->upload((string)$file, $blobName);
-                $this->io->success('Uploaded ' . basename((string) $file) . ' on ' . date('Y-m-d H:i:s'));
+                $this->io->success('Uploaded ' . basename((string)$file) . ' on ' . date('Y-m-d H:i:s'));
             } catch (ServiceException $e) {
                 // Error codes and messages are here:
                 // http://msdn.microsoft.com/library/azure/dd179439.aspx

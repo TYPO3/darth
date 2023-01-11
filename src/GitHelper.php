@@ -149,7 +149,7 @@ class GitHelper
     /**
      * Returns all commit log entries (as --oneline) from the current head to the previous tag found before HEAD.
      *
-     * @param null|string $previousTag
+     * @param string|null $previousTag
      * @return array each change log entry in one part of the array
      */
     public function getChangeLogUntilPreviousTag(string $previousTag = null): array

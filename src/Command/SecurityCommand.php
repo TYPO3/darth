@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace TYPO3\Darth\Command;
 
@@ -108,7 +109,7 @@ class SecurityCommand extends Command
             foreach ($this->collection->getAdvisories() as $advisory) {
                 $payload = $advisory->export([
                     Advisory::class => [
-                        'reference' => sprintf('composer://%s', $packageName)
+                        'reference' => sprintf('composer://%s', $packageName),
                     ],
                 ], [
                     Branch::class => $branchClosure,
@@ -220,7 +221,7 @@ class SecurityCommand extends Command
 
     /**
      * @param string $url
-     * @return null|string
+     * @return string|null
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     private function getTitleFromNews(string $url): ?string
