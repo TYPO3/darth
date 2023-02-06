@@ -198,6 +198,8 @@ class PackageCommand extends Command
         // Run "composer install" - you have to do "COMPOSER_ROOT_VERSION=8.7.5" because we have a git archive, baby!
         $this->runComposerCommand($sourceCodeDirectory);
 
+        $this->applyPatches($sourceCodeDirectory);
+
         // Remove the leftover files, and sets permissions
         $this->removeFilesExcludedForPackaging($sourceCodeDirectory);
         $this->setPermissionsForFilesForPackaging($sourceCodeDirectory);
@@ -213,6 +215,33 @@ class PackageCommand extends Command
         $composerCommand = getenv('COMPOSER_INSTALL_COMMAND');
         $this->io->note('Now running ' . $composerCommand);
         $this->runProcess($composerCommand, $directory);
+    }
+
+    /**
+     * Special handling for v11 and Doctrine DBAL, which adds a PHP 8.2 compat fix.
+     * Note: We need to copy the patch from the working directory, as the final code in the publish/ folder
+     * does not contain the Build/ folder (because we use git-archive and Build/ is excluded there).
+     */
+    protected function applyPatches(string $directory): void
+    {
+        $this->io->note('Checking if we need to apply patches ' . $directory);
+        $patchFiles = [
+            'vendor/doctrine/dbal' => 'Build/patches/postgres-platform-variable-interpolation-php82-fix.diff',
+        ];
+        foreach ($patchFiles as $baseDirectory => $patchFile) {
+            $file = $this->getApplication()->getWorkingDirectory() . '/' . $patchFile;
+            if (file_exists($file)) {
+                $this->io->writeln('Trying to apply patch ' . $patchFile);
+                $process = Process::fromShellCommandline('patch -p1 -N -i ' . $file, $directory . '/' . $baseDirectory);
+                $process->run(function ($type, $buffer) {
+                    if ($type === Process::OUT) {
+                        $this->io->write($buffer);
+                    } else {
+                        $this->io->error($buffer);
+                    }
+                });
+            }
+        }
     }
 
     /**
