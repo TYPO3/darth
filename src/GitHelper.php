@@ -118,9 +118,8 @@ class GitHelper
         $usedBranch = null;
         foreach ($branches as $branchObj) {
             $branch = $branchObj->getName();
-            if (preg_match('/remotes\/origin\/([A-z0-9_-]+' . str_replace('.', '-', $nextMinorVersion) . '|' . str_replace('.', '\.', $nextMinorVersion) . ')/', $branch)) {
-                // subtract the "remotes/" part
-                $usedBranch = substr($branch, 8);
+            if (preg_match('/origin\/([A-z0-9_-]+' . str_replace('.', '-', $nextMinorVersion) . '|' . str_replace('.', '\.', $nextMinorVersion) . ')/', $branch)) {
+                $usedBranch = $branch;
                 break;
             }
         }
