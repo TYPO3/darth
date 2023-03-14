@@ -111,12 +111,13 @@ class PublishCommand extends Command
         return 0;
     }
 
+
     /**
      * Stub for allowing proper IDE support.
      *
      * @return \Symfony\Component\Console\Application|Application
      */
-    public function getApplication()
+    public function getApplication(): ?\Symfony\Component\Console\Application
     {
         return parent::getApplication();
     }

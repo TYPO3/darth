@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace TYPO3\Darth\Model;
 
 /*
@@ -12,10 +13,10 @@ namespace TYPO3\Darth\Model;
 
 class Version implements \JsonSerializable
 {
-    const MAJOR = 'major';
-    const MINOR = 'minor';
-    const PATCH = 'patch';
-    const PATTERN = '#^v?(?P<major>\d+)\.(?P<minor>\d+)(?:\.(?P<patch>\d+))$#';
+    public const MAJOR = 'major';
+    public const MINOR = 'minor';
+    public const PATCH = 'patch';
+    public const PATTERN = '#^v?(?P<major>\d+)\.(?P<minor>\d+)(?:\.(?P<patch>\d+))$#';
 
     /**
      * @var int

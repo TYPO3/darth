@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace TYPO3\Darth\Command;
 
 /*
@@ -169,11 +170,11 @@ class SecurityCommand extends Command
             }
             $advisoryId = $matches[1];
             // streamline `CORE-SA-2021-008` to `TYPO3-CORE-SA-2021-008`
-            if (strpos($advisoryId, 'TYPO3-') !== 0) {
+            if (!str_starts_with($advisoryId, 'TYPO3-')) {
                 $advisoryId = 'TYPO3-' . $advisoryId;
             }
             // skip public service announcements (PSA)
-            if (strpos($advisoryId, 'TYPO3-PSA-') === 0) {
+            if (str_starts_with($advisoryId, 'TYPO3-PSA-')) {
                 continue;
             }
             $date = (new \DateTimeImmutable($change['date']))->setTimezone($utc);
@@ -250,12 +251,13 @@ class SecurityCommand extends Command
         return $this->fetched[$url];
     }
 
+
     /**
      * Stub for allowing proper IDE support.
      *
      * @return \Symfony\Component\Console\Application|Application
      */
-    public function getApplication()
+    public function getApplication(): ?\Symfony\Component\Console\Application
     {
         return parent::getApplication();
     }
