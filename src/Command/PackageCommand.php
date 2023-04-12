@@ -297,7 +297,7 @@ class PackageCommand extends Command
             $finder->ignoreVCS(false)
                 ->ignoreDotFiles(false);
 
-            if (strpos($filePattern, '/') !== false && is_dir($directory . '/' . dirname($filePattern))) {
+            if (str_contains($filePattern, '/')   && is_dir($directory . '/' . dirname($filePattern))) {
                 $finder->in($directory . '/' . dirname($filePattern));
                 $finder->name(basename($filePattern));
             } else {
@@ -368,12 +368,13 @@ class PackageCommand extends Command
         return $process;
     }
 
+
     /**
      * Stub for allowing proper IDE support.
      *
      * @return \Symfony\Component\Console\Application|Application
      */
-    public function getApplication()
+    public function getApplication(): ?\Symfony\Component\Console\Application
     {
         return parent::getApplication();
     }

@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace TYPO3\Darth\Model\AnnounceApi;
 
 /*
@@ -12,7 +13,7 @@ namespace TYPO3\Darth\Model\AnnounceApi;
 
 class HashCollection extends \ArrayObject implements \JsonSerializable
 {
-    const HASH_DEFINITIONS = [
+    public const HASH_DEFINITIONS = [
         'md5sum' => 32,
         'sha1sum' => 40,
         'sha256sum' => 64,

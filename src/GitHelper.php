@@ -20,10 +20,10 @@ use Symfony\Component\Process\Process;
  */
 class GitHelper
 {
-    const LOG_DELIMITER_FIELD = '%x00%x00,%x00%x00';
-    const LOG_DELIMITER_ITEM = '%x00%x00---%x00%x00';
-    const PHP_DELIMITER_FIELD = "\x00\x00,\x00\x00";
-    const PHP_DELIMITER_ITEM = "\x00\x00---\x00\x00";
+    public const LOG_DELIMITER_FIELD = '%x00%x00,%x00%x00';
+    public const LOG_DELIMITER_ITEM = '%x00%x00---%x00%x00';
+    public const PHP_DELIMITER_FIELD = "\x00\x00,\x00\x00";
+    public const PHP_DELIMITER_ITEM = "\x00\x00---\x00\x00";
 
     /**
      * The absolute path to the local GIT repository.
@@ -272,12 +272,12 @@ class GitHelper
 
         $tagsInUseOfMinorVersion = [];
         foreach ($tags as $tagName) {
-            if ($specificVersionGiven && (strpos($tagName, $givenVersion) === 0 || strpos($tagName, 'v' . $givenVersion) === 0)) {
+            if ($specificVersionGiven && (str_starts_with($tagName, $givenVersion)   || str_starts_with($tagName, 'v' . $givenVersion))) {
                 // @todo how to deal with alpha, beta versions and RCs!
                 throw new \RuntimeException('A version for ' . $givenVersion . ' already exists', 1498742777);
             }
 
-            if (strpos($tagName, $givenVersion) === 0 || strpos($tagName, 'v' . $givenVersion) === 0) {
+            if (str_starts_with($tagName, $givenVersion)   || str_starts_with($tagName, 'v' . $givenVersion)) {
                 $tagsInUseOfMinorVersion[] = $tagName;
             }
         }

@@ -10,21 +10,26 @@
 	],
 	"require": {
 		"php": "^7.4 || ^8.0",
-		"symfony/finder": "^5.0 || ^6.0",
-		"symfony/dotenv": "^5.0 || ^6.0",
-		"symfony/console": "^5.0 || ^6.0",
-		"symfony/yaml": "^4.0 || ^5.0",
+		"symfony/finder": "^6.0",
+		"symfony/dotenv": "^6.0",
+		"symfony/console": "^6.0",
+		"symfony/yaml": "^6.0",
 		"typo3fluid/fluid": "^2.7",
 		"microsoft/azure-storage": "^0.16.0",
 		"gitonomy/gitlib": "^1.3"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^9",
-		"typo3/coding-standards": "^0.6.1"
+		"typo3/coding-standards": "^0.7"
 	},
 	"autoload": {
 		"psr-4": {
 			"TYPO3\\Darth\\": "src/"
+		}
+	},
+	"config": {
+		"platform": {
+			"php": "8.1.0"
 		}
 	}
 }

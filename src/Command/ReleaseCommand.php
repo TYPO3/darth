@@ -357,7 +357,7 @@ class ReleaseCommand extends Command
      *
      * @return \Symfony\Component\Console\Application|Application
      */
-    public function getApplication()
+    public function getApplication(): ?\Symfony\Component\Console\Application
     {
         return parent::getApplication();
     }
