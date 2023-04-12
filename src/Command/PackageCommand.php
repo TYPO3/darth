@@ -368,7 +368,6 @@ class PackageCommand extends Command
         return $process;
     }
 
-
     /**
      * Stub for allowing proper IDE support.
      *

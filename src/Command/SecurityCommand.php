@@ -251,7 +251,6 @@ class SecurityCommand extends Command
         return $this->fetched[$url];
     }
 
-
     /**
      * Stub for allowing proper IDE support.
      *
