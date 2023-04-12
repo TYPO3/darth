@@ -11,24 +11,18 @@ namespace TYPO3\Darth\Uploader;
  * file that was distributed with this source code.
  */
 
+use MicrosoftAzure\Storage\Blob\BlobRestProxy;
 use MicrosoftAzure\Storage\Blob\Internal\IBlob;
-use MicrosoftAzure\Storage\Common\ServicesBuilder;
 
 class AzureUploader implements UploaderInterface
 {
-    /**
-     * @var IBlob
-     */
-    private $client;
+    private IBlob $client;
 
-    /**
-     * @var string
-     */
-    private $containerName;
+    private string $containerName;
 
     public function __construct()
     {
-        $this->client = ServicesBuilder::getInstance()->createBlobService(getenv('AZURE_CONNECTIONSTRING'));
+        $this->client = BlobRestProxy::createBlobService(getenv('AZURE_CONNECTIONSTRING'));
         $this->containerName = getenv('AZURE_CONTAINER');
     }
 

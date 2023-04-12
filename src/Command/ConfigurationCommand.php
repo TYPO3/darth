@@ -68,7 +68,6 @@ class ConfigurationCommand extends Command
         return 0;
     }
 
-
     /**
      * Stub for allowing proper IDE support.
      *
