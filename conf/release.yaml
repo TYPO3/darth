@@ -83,6 +83,8 @@ excludeFromPackaging:
     - ".svn"
     - ".travis.yml"
     - ".appveyor.yml"
+  "typo3/sysext/":
+    - "styleguide"
   "vendor/**":
     - "Test"
     - "tests"
@@ -97,6 +99,11 @@ executableFilesInPackage:
   - "*.sh"
   - "*.pl"
   - "typo3/sysext/core/bin/typo3"
+
+removeFromComposerJson:
+  - "replace.typo3/cms-styleguide"
+  - "autoload.psr-4.TYPO3\\CMS\\Styleguide\\"
+  - "autoload-dev.psr-4.TYPO3\\CMS\\Styleguide\\Tests\\"
 
 announce:
   endpoints:

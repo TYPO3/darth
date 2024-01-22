@@ -11,6 +11,7 @@ namespace TYPO3\Darth\Command;
  * file that was distributed with this source code.
  */
 
+use Composer\Json\JsonFile;
 use Gitonomy\Git\Repository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -195,6 +196,8 @@ class PackageCommand extends Command
         // Extract and remove the GIT archive
         $this->runProcess(getenv('TAR_COMMAND') . ' xf ' . $archiveFile . ' && rm ' . $archiveFile, $sourceCodeDirectory);
 
+        // Adjusts `composer.json` before actually installing
+        $this->adjustComposerJson($sourceCodeDirectory);
         // Run "composer install" - you have to do "COMPOSER_ROOT_VERSION=8.7.5" because we have a git archive, baby!
         $this->runComposerCommand($sourceCodeDirectory);
 
@@ -203,6 +206,19 @@ class PackageCommand extends Command
         // Remove the leftover files, and sets permissions
         $this->removeFilesExcludedForPackaging($sourceCodeDirectory);
         $this->setPermissionsForFilesForPackaging($sourceCodeDirectory);
+    }
+
+    protected function adjustComposerJson(string $directory): void
+    {
+        $removeFromComposerJson = $this->getApplication()->getConfiguration('removeFromComposerJson');
+        $composerJsonFile = $directory . '/composer.json';
+        // see https://github.com/composer/composer/blob/2.6.6/src/Composer/Json/JsonFile.php
+        $composerJson = new JsonFile($composerJsonFile);
+        $payload = $composerJson->read();
+        foreach ($removeFromComposerJson as $jsonPath) {
+            $payload = $this->removeFromArray($payload, $jsonPath, true);
+        }
+        $composerJson->write($payload);
     }
 
     /**
@@ -366,6 +382,32 @@ class PackageCommand extends Command
         }
 
         return $process;
+    }
+
+    private function removeFromArray(array $payload, string $path, bool $allowMissingKeys = false): array
+    {
+        $steps = explode('.', $path);
+        if ($steps === []) {
+            throw new \RuntimeException('Cannot process empty path');
+        }
+        $cursor = &$payload;
+        $last = end($steps);
+        foreach ($steps as $step) {
+            if (!array_key_exists($step, $cursor)) {
+                if ($allowMissingKeys) {
+                    return $payload;
+                }
+                throw new \RuntimeException(
+                    sprintf('Path "%s" was not found at step "%s"', $path, $step)
+                );
+            }
+            if ($step === $last) {
+                unset($cursor[$step]);
+            } else {
+                $cursor = &$cursor[$step];
+            }
+        }
+        return $payload;
     }
 
     /**
