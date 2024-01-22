@@ -11,6 +11,7 @@ namespace TYPO3\Darth\Command;
  * file that was distributed with this source code.
  */
 
+use Composer\Json\JsonFile;
 use Gitonomy\Git\Repository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -211,20 +212,13 @@ class PackageCommand extends Command
     {
         $removeFromComposerJson = $this->getApplication()->getConfiguration('removeFromComposerJson');
         $composerJsonFile = $directory . '/composer.json';
-        $payload = json_decode(
-            file_get_contents($composerJsonFile),
-            true,
-            64,
-            JSON_THROW_ON_ERROR
-        );
+        // see https://github.com/composer/composer/blob/2.6.6/src/Composer/Json/JsonFile.php
+        $composerJson = new JsonFile($composerJsonFile);
+        $payload = $composerJson->read();
         foreach ($removeFromComposerJson as $jsonPath) {
             $payload = $this->removeFromArray($payload, $jsonPath, true);
         }
-        file_put_contents(
-            $composerJsonFile,
-            // see https://github.com/composer/composer/blob/2.6.6/src/Composer/Json/JsonFile.php#L137
-            json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
-        );
+        $composerJson->write($payload);
     }
 
     /**
