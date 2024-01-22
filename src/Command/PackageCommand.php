@@ -195,6 +195,8 @@ class PackageCommand extends Command
         // Extract and remove the GIT archive
         $this->runProcess(getenv('TAR_COMMAND') . ' xf ' . $archiveFile . ' && rm ' . $archiveFile, $sourceCodeDirectory);
 
+        // Adjusts `composer.json` before actually installing
+        $this->adjustComposerJson($sourceCodeDirectory);
         // Run "composer install" - you have to do "COMPOSER_ROOT_VERSION=8.7.5" because we have a git archive, baby!
         $this->runComposerCommand($sourceCodeDirectory);
 
@@ -203,6 +205,26 @@ class PackageCommand extends Command
         // Remove the leftover files, and sets permissions
         $this->removeFilesExcludedForPackaging($sourceCodeDirectory);
         $this->setPermissionsForFilesForPackaging($sourceCodeDirectory);
+    }
+
+    protected function adjustComposerJson(string $directory): void
+    {
+        $removeFromComposerJson = $this->getApplication()->getConfiguration('removeFromComposerJson');
+        $composerJsonFile = $directory . '/composer.json';
+        $payload = json_decode(
+            file_get_contents($composerJsonFile),
+            true,
+            64,
+            JSON_THROW_ON_ERROR
+        );
+        foreach ($removeFromComposerJson as $jsonPath) {
+            $payload = $this->removeFromArray($payload, $jsonPath, true);
+        }
+        file_put_contents(
+            $composerJsonFile,
+            // see https://github.com/composer/composer/blob/2.6.6/src/Composer/Json/JsonFile.php#L137
+            json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+        );
     }
 
     /**
@@ -366,6 +388,32 @@ class PackageCommand extends Command
         }
 
         return $process;
+    }
+
+    private function removeFromArray(array $payload, string $path, bool $allowMissingKeys = false): array
+    {
+        $steps = explode('.', $path);
+        if ($steps === []) {
+            throw new \RuntimeException('Cannot process empty path');
+        }
+        $cursor = &$payload;
+        $last = end($steps);
+        foreach ($steps as $step) {
+            if (!array_key_exists($step, $cursor)) {
+                if ($allowMissingKeys) {
+                    return $payload;
+                }
+                throw new \RuntimeException(
+                    sprintf('Path "%s" was not found at step "%s"', $path, $step)
+                );
+            }
+            if ($step === $last) {
+                unset($cursor[$step]);
+            } else {
+                $cursor = &$cursor[$step];
+            }
+        }
+        return $payload;
     }
 
     /**
