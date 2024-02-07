@@ -53,6 +53,11 @@ updateFiles:
     file: "Build/composer/composer.dist.json"
     pattern: '"typo3\/cms-[^"]+": "(\d+\.\d+\.x-dev)"'
     type: "nextDevBranchAlias"
+  # ensure 13.0.x-dev is replaced by 13.1.x-dev
+  -
+    file: "Build/Scripts/runTests.sh"
+    pattern: 'COMPOSER_ROOT_VERSION="(\d+\.\d+\.x-dev)"'
+    type: "nextDevBranchAlias"
   # ensure 12.0.x-dev is replaced by 12.1.x-dev
   -
     file: "typo3/sysext/*/ext_emconf.php"
