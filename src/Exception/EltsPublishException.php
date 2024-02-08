@@ -11,6 +11,4 @@ namespace TYPO3\Darth\Exception;
  * file that was distributed with this source code.
  */
 
-class EltsPublishException extends \LogicException
-{
-}
+class EltsPublishException extends \LogicException {}

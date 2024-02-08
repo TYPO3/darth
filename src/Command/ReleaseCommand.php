@@ -161,7 +161,7 @@ class ReleaseCommand extends Command
             $attempts = 0;
             while ($this->gitHelper->getCurrentRevision() === $commitHashBeforeRelease) {
                 $git->run('pull');
-                $this->io->note('Waiting for remote git repository to be updated. Attempt #' . ($attempts+1));
+                $this->io->note('Waiting for remote git repository to be updated. Attempt #' . ($attempts + 1));
                 sleep(10);
                 if (++$attempts > 60) {
                     $this->io->error('We waited, but this infrastructure is too slow. So now you have to do the rest manually. '
@@ -345,7 +345,7 @@ class ReleaseCommand extends Command
         if ($sprintRelease) {
             $versionParts[1]++;
             $versionParts[2] = 0;
-        // 8.7.1 -> 8.7.2
+            // 8.7.1 -> 8.7.2
         } else {
             $versionParts[2]++;
         }
