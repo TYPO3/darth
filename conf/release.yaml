@@ -27,6 +27,10 @@ updateFiles:
     pattern: '"typo3\/cms-[^"]+"\s*:\s*"((?:[6-9]|[1-9][0-9])\.[0-9]+\.\*@dev)'
     type: "bugfixVersion"
   -
+    file: "Build/composer/composer.dist.json"
+    pattern: '"typo3\/cms-[^"]+": "(\d+\.\d+\.(\d+|x)-dev)"'
+    type: "bugfixVersion"
+  -
     file: "typo3/sysext/core/Classes/Core/SystemEnvironmentBuilder.php"
     pattern: '\''TYPO3_version\'',\s*\''([^\'']+)'
     type: "nextDevVersion"
@@ -48,11 +52,11 @@ updateFiles:
     file: "composer.json"
     pattern: '"dev-main": "(\d+\.\d+\.x-dev)"'
     type: "nextDevBranchAlias"
-  # ensure 9.2.x-dev is replaced by 9.3.x-dev
+  # ensure 9.3.0 is replaced by 9.3.1-dev
   -
     file: "Build/composer/composer.dist.json"
-    pattern: '"typo3\/cms-[^"]+": "(\d+\.\d+\.x-dev)"'
-    type: "nextDevBranchAlias"
+    pattern: '"typo3\/cms-[^"]+": "(\d+\.\d+\.\d+)"'
+    type: "nextDevVersion"
   # ensure 13.0.x-dev is replaced by 13.1.x-dev
   -
     file: "Build/Scripts/runTests.sh"
