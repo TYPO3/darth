@@ -17,11 +17,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use TYPO3\Darth\Application;
 use TYPO3\Darth\GitHelper;
+use TYPO3\Darth\Service\FileVersionModificationService;
 
 /**
  * Adds a signed "RELEASE" commit with modified versions, pushes the change to gerrit, auto-approves and then adds
@@ -31,15 +31,8 @@ use TYPO3\Darth\GitHelper;
  */
 class ReleaseCommand extends Command
 {
-    /**
-     * @var SymfonyStyle
-     */
-    private $io;
-
-    /**
-     * @var GitHelper
-     */
-    private $gitHelper;
+    private SymfonyStyle $io;
+    private GitHelper $gitHelper;
 
     /**
      * {@inheritdoc}
@@ -62,7 +55,7 @@ class ReleaseCommand extends Command
                 'sprint-release',
                 null,
                 InputOption::VALUE_NONE,
-                'If this option is set, the version is considered as sprint release (e.g. 9.1.0)'
+                'If this option is set, the version is considered as sprint release (e.g. 9.1.0) - then the upcoming version will be the next "minor" release'
             )
             ->addOption(
                 'dry-run',
@@ -87,6 +80,7 @@ class ReleaseCommand extends Command
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('The day has come - it is release time! You have just pressed the button');
         $this->gitHelper = new GitHelper($this->getApplication()->getWorkingDirectory(), $this->io->isVerbose());
+        $fileModificationService = new FileVersionModificationService();
 
         $sprintRelease = $input->hasOption('sprint-release') && $input->getOption('sprint-release') != false;
         $dryRun = $input->hasOption('dry-run') && $input->getOption('dry-run') != false;
@@ -115,7 +109,7 @@ class ReleaseCommand extends Command
         if ($isInteractive) {
             $answer = $this->io->confirm('Is the information above correct?');
             if (!$answer) {
-                return 1;
+                return self::FAILURE;
             }
         }
 
@@ -130,7 +124,7 @@ class ReleaseCommand extends Command
 
         $filesToManipulate = $this->getApplication()->getConfiguration('updateFiles');
         if (is_array($filesToManipulate)) {
-            $this->updateFilesWithVersions($workingDirectory, $filesToManipulate, $sprintRelease, $nextVersion);
+            $fileModificationService->updateFilesWithVersions($workingDirectory, $filesToManipulate, $sprintRelease, $nextVersion, null, $this->io);
         }
 
         // Now commit with "[RELEASE] Released TYPO3 x.y.z"
@@ -204,7 +198,7 @@ class ReleaseCommand extends Command
 
         // now change the versions again, with the planned next version
         // if it is a "9.0.1" release, it's gonna be "9.0.2-dev"
-        $this->updateFilesWithVersions($workingDirectory, $filesToManipulate, $sprintRelease, $upcomingVersion, $nextVersion);
+        $fileModificationService->updateFilesWithVersions($workingDirectory, $filesToManipulate, $sprintRelease, $upcomingVersion, $nextVersion, $this->io);
 
         if ($sprintRelease) {
             $this->io->note('Update composer.lock file');
@@ -233,102 +227,7 @@ class ReleaseCommand extends Command
         $this->io->success('Release is done, now go on with packaging by using the "package" command');
         $this->io->comment('./bin/darth package  ' . $nextVersion);
 
-        return 0;
-    }
-
-    /**
-     * Goes through the source code and updates the code where it applies.
-     *
-     * @param string $workingDirectory
-     * @param array  $configuration
-     * @param bool $sprintRelease
-     * @param string $nextVersion
-     * @param string $currentVersion      current version, used "-dev" flag for replacements
-     */
-    protected function updateFilesWithVersions(string $workingDirectory, array $configuration, bool $sprintRelease, string $nextVersion, string $currentVersion = null)
-    {
-        $versionParts = explode('.', $nextVersion);
-        $nextMinorVersion = $versionParts[0] . '.' . $versionParts[1];
-        $firstBugfixVersion = $nextMinorVersion . '.0';
-
-        // now find the files you want to modify
-        foreach ($configuration as $fileDetails) {
-            try {
-                $finder = new Finder();
-                $finder->name(basename($fileDetails['file']))
-                    ->ignoreUnreadableDirs()
-                    ->in($workingDirectory . '/' . dirname($fileDetails['file']));
-            } catch (\InvalidArgumentException $exception) {
-                // skips directory search patterns that do not exist in older versions
-                // (e.g. `Build/composer/composer.dist.json` introduced with TYPO3 v11)
-                if ($this->io->isVerbose()) {
-                    $this->io->warning($exception->getMessage());
-                }
-                continue;
-            }
-
-            foreach ($finder as $foundFile) {
-                $fileContents = $foundFile->getContents();
-                $updatedFileContents = $fileContents;
-                switch ($fileDetails['type']) {
-                    case 'nextBugfixVersion':
-                        if (!$currentVersion) {
-                            continue 2;
-                        }
-                        // just replace the just released version with the latest version
-                        $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextVersion) {
-                            return str_replace($matches[1], $nextVersion, $matches[0]);
-                        }, $fileContents);
-                        break;
-                    case 'bugfixVersion':
-                        // just replace it with the latest version
-                        $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextVersion) {
-                            return str_replace($matches[1], $nextVersion, $matches[0]);
-                        }, $fileContents);
-                        break;
-                    case 'nextDevVersion':
-                        if (!$currentVersion) {
-                            continue 2;
-                        }
-                        // just replace the pattern with "1.2.3-dev"
-                        $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextVersion) {
-                            return str_replace($matches[1], $nextVersion . '-dev', $matches[0]);
-                        }, $fileContents);
-                        break;
-                    case 'nextDevBranch':
-                        if (!$currentVersion) {
-                            continue 2;
-                        }
-                        // just replace the pattern with "1.2.*@dev"
-                        $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextMinorVersion) {
-                            return str_replace($matches[1], $nextMinorVersion . '.*@dev', $matches[0]);
-                        }, $fileContents);
-                        break;
-                    case 'nextDevBranchAlias':
-                        if (!$currentVersion || !$sprintRelease) {
-                            continue 2;
-                        }
-                        // just replace the pattern with "1.2.x-dev"
-                        $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextMinorVersion) {
-                            return str_replace($matches[1], $nextMinorVersion . '.x-dev', $matches[0]);
-                        }, $fileContents);
-                        break;
-                    case 'minorVersion':
-                        // just replace it with the latest version
-                        $updatedFileContents = preg_replace_callback('/' . $fileDetails['pattern'] . '/u', function ($matches) use ($nextMinorVersion) {
-                            return str_replace($matches[1], $nextMinorVersion, $matches[0]);
-                        }, $fileContents);
-                        break;
-                }
-
-                if ($fileContents !== $updatedFileContents && $updatedFileContents !== false) {
-                    file_put_contents((string)$foundFile, $updatedFileContents);
-                    if ($this->io->isVerbose()) {
-                        $this->io->writeln('Updated ' . $fileDetails['type'] . ' for file ' . $foundFile);
-                    }
-                }
-            }
-        }
+        return self::SUCCESS;
     }
 
     /**
