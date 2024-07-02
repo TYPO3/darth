@@ -85,9 +85,8 @@ class AnnounceCommand extends Command
             ->addOption(
                 'force',
                 null,
-                InputOption::VALUE_OPTIONAL,
-                'Whether to force overriding existing releases',
-                false
+                InputOption::VALUE_NONE,
+                'Whether to force overriding existing releases'
             )
             ->addOption(
                 'elts',
@@ -170,6 +169,7 @@ class AnnounceCommand extends Command
             $releaseNotesPath,
             [
                 'version' => $versionObject,
+                'majorVersion' => $versionObject->getAsMajor(),
                 'previousVersion' => $previousVersionObject,
                 'newsLink' => $newsLink,
                 'releaseType' => $releaseType,
