@@ -105,7 +105,7 @@ class ReleaseCommand extends Command
         $remoteBranchWithRemoteName = $this->gitHelper->findRemoteBranch($nextVersion);
         $upcomingVersion = $this->determineUpcomingVersion($nextVersion, $sprintRelease);
 
-        list(, $remoteBranch) = explode('/', $remoteBranchWithRemoteName);
+        [, $remoteBranch] = explode('/', $remoteBranchWithRemoteName);
         $this->io->note(
             'The version to be created will be ' . $nextVersion . "\n" .
             'The branch to be used with is ' . $remoteBranchWithRemoteName . "\n" .
