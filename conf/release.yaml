@@ -23,7 +23,7 @@ updateFiles:
     pattern: '\''(?!.*?php).*\''\s=>\s\''((?:[6-9]|[1-9][0-9])\.[0-9]+\.[0-9]+\s*[\-]*\s*[6-9]*\.*[0-9]*\.*[0-9]*)'
     type: "bugfixVersion"
   -
-    file: "typo3/sysext/*/composer.json"
+    file: "typo3/sysext/*/composer.json|Build/tests/packages/*/composer.json"
     pattern: '"typo3\/cms-[^"]+"\s*:\s*"((?:[6-9]|[1-9][0-9])\.[0-9]+\.\*@dev)'
     type: "bugfixVersion"
   -
@@ -39,12 +39,12 @@ updateFiles:
     pattern: 'const\s+VERSION\s*=\s*\''([^\'']+)'
     type: "nextDevVersion"
   -
-    file: "typo3/sysext/*/composer.json"
+    file: "typo3/sysext/*/composer.json|Build/tests/packages/*/composer.json"
     pattern: '"typo3\/cms-[^"]+"\s*:\s*"((?:[6-9]|[1-9][0-9])\.[0-9]+\.[0-9]+)'
     type: "nextDevBranch"
   # ensure 8.7.5 is replaced by 8.7.6
   -
-    file: "typo3/sysext/*/composer.json"
+    file: "typo3/sysext/*/composer.json|Build/tests/packages/*/composer.json"
     pattern: '"dev-main": "(\d+\.\d+\.x-dev)"'
     type: "nextDevBranchAlias"
   # ensure 9.2.x-dev is replaced by 9.3.x-dev
