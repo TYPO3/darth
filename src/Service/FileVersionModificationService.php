@@ -24,10 +24,22 @@ class FileVersionModificationService
     /**
      * @param string|null $currentVersion current version, used "-dev" flag for replacements
      */
-    public function updateFilesWithVersions(string $workingDirectory, array $configuration, bool $sprintRelease, string $nextVersion, string $currentVersion = null, ?SymfonyStyle $io = null): void
+    public function updateFilesWithVersions(string $workingDirectory, array $rawConfiguration, bool $sprintRelease, string $nextVersion, string $currentVersion = null, ?SymfonyStyle $io = null): void
     {
         $versionParts = explode('.', $nextVersion);
         $nextMinorVersion = $versionParts[0] . '.' . $versionParts[1];
+
+        $configuration = [];
+        // Split | in `file` property into distinct configuration entries
+        foreach ($rawConfiguration as $key => $fileDetails) {
+            $files = explode('|', $fileDetails['file']);
+            foreach ($files as $file) {
+                $configuration[] = [
+                    ...$fileDetails,
+                    'file' => $file,
+                ];
+            }
+        }
 
         // now find the files you want to modify
         foreach ($configuration as $fileDetails) {
