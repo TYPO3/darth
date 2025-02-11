@@ -140,7 +140,7 @@ class PackageCommand extends Command
         unlink($artefactsDirectory . '/README_unsigned.md');
 
         // Legacy code
-        // Show MD5 hashes and SHA1 hashes
+        // Show MD5, SHA1 and SHA256 hashes
         $md5Command = sprintf(getenv('CHECKSUM_MD5_COMMAND'), '', '*.gz *.zip');
         $this->io->note(
             "MD5 hashes of the artefacts:\n"
@@ -150,6 +150,11 @@ class PackageCommand extends Command
         $this->io->note(
             "SHA1 hashes of the artefacts:\n"
             . $this->runProcess($shaCommand, $artefactsDirectory)->getOutput()
+        );
+        $sha256Command = sprintf(getenv('CHECKSUM_SHA_COMMAND'), '256', '*.gz *.zip');
+        $this->io->note(
+            "SHA256 hashes of the artefacts:\n"
+            . $this->runProcess($sha256Command, $artefactsDirectory)->getOutput()
         );
 
         $this->io->success('All done. Just upload it now with the "publish" process.');
