@@ -86,7 +86,7 @@ excludeFromPackaging:
     - "*~"
     - ".travis.yml"
     - ".appveyor.yml"
-    - "phpstorm.meta.php"
+    - ".phpstorm.meta.php"
   "**":
     - ".gitignore"
     - ".git/"
