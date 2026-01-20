@@ -24,11 +24,11 @@ updateFiles:
     type: "bugfixVersion"
   -
     file: "typo3/sysext/*/composer.json|Build/tests/packages/*/composer.json"
-    pattern: '"typo3\/cms-[^"]+"\s*:\s*"((?:[6-9]|[1-9][0-9])\.[0-9]+\.\*@dev)'
+    pattern: '"typo3\/(?:cms-|theme-)[^"]+"\s*:\s*"((?:[6-9]|[1-9][0-9])\.[0-9]+\.\*@dev)'
     type: "bugfixVersion"
   -
     file: "Build/composer/composer.dist.json"
-    pattern: '"typo3\/cms-[^"]+": "(\d+\.\d+\.(\d+|x)-dev)"'
+    pattern: '"typo3\/(?:cms-|theme-)[^"]+": "(\d+\.\d+\.(\d+|x)-dev)"'
     type: "bugfixVersion"
   -
     file: "typo3/sysext/core/Classes/Core/SystemEnvironmentBuilder.php"
@@ -40,7 +40,7 @@ updateFiles:
     type: "nextDevVersion"
   -
     file: "typo3/sysext/*/composer.json|Build/tests/packages/*/composer.json"
-    pattern: '"typo3\/cms-[^"]+"\s*:\s*"((?:[6-9]|[1-9][0-9])\.[0-9]+\.[0-9]+)'
+    pattern: '"typo3\/(?:cms-|theme-)[^"]+"\s*:\s*"((?:[6-9]|[1-9][0-9])\.[0-9]+\.[0-9]+)'
     type: "nextDevBranch"
   # ensure 8.7.5 is replaced by 8.7.6
   -
@@ -55,7 +55,7 @@ updateFiles:
   # ensure 9.3.0 is replaced by 9.3.1-dev
   -
     file: "Build/composer/composer.dist.json"
-    pattern: '"typo3\/cms-[^"]+": "(\d+\.\d+\.\d+)"'
+    pattern: '"typo3\/(?:cms-|theme-)[^"]+": "(\d+\.\d+\.\d+)"'
     type: "nextDevVersion"
   # ensure 13.0.x-dev is replaced by 13.1.x-dev
   -
