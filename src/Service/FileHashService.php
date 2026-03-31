@@ -16,15 +16,8 @@ use Symfony\Component\Process\Process;
 
 class FileHashService
 {
-    /**
-     * @var array
-     */
-    private $commands;
-
-    /**
-     * @var string
-     */
-    private $workingDirectory;
+    private array $commands;
+    private string $workingDirectory;
 
     public function __construct(array $commands, string $workingDirectory)
     {
