@@ -15,15 +15,8 @@ use Symfony\Component\Dotenv\Dotenv;
 
 class DotEnvService
 {
-    /**
-     * @var array
-     */
-    private $paths = [];
-
-    /**
-     * @var Dotenv
-     */
-    private $dotEnv;
+    private array $paths;
+    private Dotenv $dotEnv;
 
     public function __construct()
     {

@@ -32,15 +32,8 @@ use TYPO3Fluid\Fluid\View\TemplateView;
  */
 class PackageCommand extends Command
 {
-    /**
-     * @var SymfonyStyle
-     */
-    private $io;
-
-    /**
-     * @var GitHelper
-     */
-    private $gitHelper;
+    private SymfonyStyle $io;
+    private GitHelper $gitHelper;
 
     /**
      * Configures the current command.

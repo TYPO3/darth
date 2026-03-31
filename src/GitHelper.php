@@ -57,7 +57,7 @@ class GitHelper
      * @param string|null $revision the revision to be checked out (optionally)
      * @return Repository the initialized Git repository object to do tasks on it
      */
-    public function initializeCleanWorkingCopy(string $revision = null): Repository
+    public function initializeCleanWorkingCopy(?string $revision = null): Repository
     {
         $this->git = new Repository($this->workingDirectory, ['debug' => $this->isVerbose]);
         $this->git->run('clean', ['-d', '-f']);
@@ -151,7 +151,7 @@ class GitHelper
      * @param string|null $previousTag
      * @return array each change log entry in one part of the array
      */
-    public function getChangeLogUntilPreviousTag(string $previousTag = null): array
+    public function getChangeLogUntilPreviousTag(?string $previousTag = null): array
     {
         if ($previousTag === null) {
             $previousTag = $this->getPreviousTagName();
@@ -175,12 +175,8 @@ class GitHelper
     /**
      * Solves Git changes (containing some optional information as given in $grep).
      * Each of the result items contains subject, body and date.
-     *
-     * @param string|null $previousTag
-     * @param string|null $grep
-     * @return array
      */
-    public function getChangeItemsUntilPreviousTag(string $previousTag = null, string $grep = null): array
+    public function getChangeItemsUntilPreviousTag(?string $previousTag = null, ?string $grep = null): array
     {
         if ($previousTag === null) {
             $previousTag = $this->getPreviousTagName();

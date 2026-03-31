@@ -225,7 +225,7 @@ class ReleaseCommand extends Command
         }
 
         $this->io->success('Release is done, now go on with packaging by using the "package" command');
-        $this->io->comment('./bin/darth package  ' . $nextVersion);
+        $this->io->comment('./bin/darth package ' . $nextVersion);
 
         return self::SUCCESS;
     }
