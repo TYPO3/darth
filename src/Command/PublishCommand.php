@@ -63,7 +63,7 @@ class PublishCommand extends Command
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('Upload all files to the cloud');
