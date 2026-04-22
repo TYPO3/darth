@@ -237,7 +237,7 @@ class AnnounceCommand extends Command
             'RELEASE_NOTES.md'
         );
         $view = new TemplateView();
-        $view->getTemplatePaths()->setTemplatePathAndFilename($template);
+        $view->getRenderingContext()->getTemplatePaths()->setTemplatePathAndFilename($template);
         $view->assignMultiple($variables);
         file_put_contents($releaseNotesPath, $view->render());
     }

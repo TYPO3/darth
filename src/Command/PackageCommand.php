@@ -110,7 +110,7 @@ class PackageCommand extends Command
         $readmeTemplate = $this->getApplication()->getConfigurationFileName('README.md');
 
         $view = new TemplateView();
-        $view->getTemplatePaths()->setTemplatePathAndFilename($readmeTemplate);
+        $view->getRenderingContext()->getTemplatePaths()->setTemplatePathAndFilename($readmeTemplate);
         $view->assignMultiple(
             [
                 'version' => $version,
