@@ -38,7 +38,7 @@ class PackageCommand extends Command
     /**
      * Configures the current command.
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument(
@@ -110,7 +110,7 @@ class PackageCommand extends Command
         $readmeTemplate = $this->getApplication()->getConfigurationFileName('README.md');
 
         $view = new TemplateView();
-        $view->getTemplatePaths()->setTemplatePathAndFilename($readmeTemplate);
+        $view->getRenderingContext()->getTemplatePaths()->setTemplatePathAndFilename($readmeTemplate);
         $view->assignMultiple(
             [
                 'version' => $version,
@@ -184,7 +184,7 @@ class PackageCommand extends Command
      * @param string $revision
      * @param string $sourceCodeDirectory
      */
-    protected function prepare(Repository $git, string $revision, string $sourceCodeDirectory)
+    protected function prepare(Repository $git, string $revision, string $sourceCodeDirectory): void
     {
         $archiveFile = dirname($sourceCodeDirectory) . '/gitarchive-' . date('Ymd-His') . '-' . $revision . '.tar';
 
@@ -224,7 +224,7 @@ class PackageCommand extends Command
      *
      * @param string $directory
      */
-    protected function runComposerCommand(string $directory)
+    protected function runComposerCommand(string $directory): void
     {
         $composerCommand = getenv('COMPOSER_INSTALL_COMMAND');
         $this->io->note('Now running ' . $composerCommand);
@@ -263,7 +263,7 @@ class PackageCommand extends Command
      *
      * @param string $directory
      */
-    protected function removeFilesExcludedForPackaging(string $directory)
+    protected function removeFilesExcludedForPackaging(string $directory): void
     {
         $this->io->note('Removing test, development and example files not handled properly by git/composer');
         $excludeFilesFromPackaging = $this->getApplication()->getConfiguration('excludeFromPackaging');
@@ -300,7 +300,7 @@ class PackageCommand extends Command
      *
      * @param string $directory the full path to the directory containing all sources codes
      */
-    protected function setPermissionsForFilesForPackaging(string $directory)
+    protected function setPermissionsForFilesForPackaging(string $directory): void
     {
         // @todo: unsetting the permissions
         // find ${project-permissions.directory} -type f | xargs chmod a-x
@@ -336,7 +336,7 @@ class PackageCommand extends Command
      *
      * @return array
      */
-    protected function createAndSignArtefacts(string $sourceCodeDirectory, $version): array
+    protected function createAndSignArtefacts(string $sourceCodeDirectory, string $version): array
     {
         $artefactDirectory = $this->getApplication()->getArtefactsDirectory($version);
         $artefactBaseName = basename($sourceCodeDirectory);

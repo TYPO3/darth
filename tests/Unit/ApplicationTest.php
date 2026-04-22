@@ -11,12 +11,11 @@ namespace TYPO3\Darth\Tests\Unit;
  * file that was distributed with this source code.
  */
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use TYPO3\Darth\Application;
 
-/**
- * @covers Application
- */
+#[CoversClass(className: Application::class)]
 class ApplicationTest extends TestCase
 {
     public function testIfApplicationThrowsExceptionWhenNoWorkingDirectoryEnvVariableIsSet(): void

@@ -24,15 +24,12 @@ use TYPO3\Darth\Service\DotEnvService;
  */
 class ConfigurationCommand extends Command
 {
-    /**
-     * @var SymfonyStyle
-     */
-    private $io;
+    private SymfonyStyle $io;
 
     /**
      * {@inheritdoc}
      */
-    public function configure()
+    public function configure(): void
     {
         $this->setDescription('This command shows the current configuration to verify according settings.');
     }

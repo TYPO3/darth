@@ -29,15 +29,12 @@ use TYPO3\Darth\Uploader\EltsUploader;
  */
 class PublishCommand extends Command
 {
-    /**
-     * @var SymfonyStyle
-     */
-    private $io;
+    private SymfonyStyle $io;
 
     /**
      * Configures the current command.
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument(
@@ -63,7 +60,7 @@ class PublishCommand extends Command
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('Upload all files to the cloud');

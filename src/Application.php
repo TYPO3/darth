@@ -214,6 +214,9 @@ class Application extends \Symfony\Component\Console\Application
     private function getMainDirectory(): string
     {
         $scriptEntryPath = realpath($_SERVER['PWD'] . '/' . $_SERVER['PHP_SELF']);
+        if ($scriptEntryPath === false) {
+            throw new \RuntimeException('Could not determine main directory', 1774945737);
+        }
 
         return dirname(dirname($scriptEntryPath));
     }
