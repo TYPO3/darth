@@ -26,15 +26,12 @@ use TYPO3\Darth\GitHelper;
  */
 class InitializeCommand extends Command
 {
-    /**
-     * @var SymfonyStyle
-     */
-    private $io;
+    private SymfonyStyle $io;
 
     /**
      * {@inheritdoc}
      */
-    public function configure()
+    public function configure(): void
     {
         $this->setDescription('This task cleans up previous left-overs, prepares a clean Git repository and checks for all tools needed.');
     }

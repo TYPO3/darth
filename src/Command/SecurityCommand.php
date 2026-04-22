@@ -30,36 +30,17 @@ use TYPO3\Darth\Model\Version;
  */
 class SecurityCommand extends Command
 {
-    /**
-     * @var SymfonyStyle
-     */
-    private $io;
-
-    /**
-     * @var Client
-     */
-    private $client;
-
-    /**
-     * @var Collection
-     */
-    private $collection;
-
-    /**
-     * @var GitHelper
-     */
-    private $gitHelper;
-
-    /**
-     * Local cache of content per URL
-     * @var array<string, string>
-     */
-    private $fetched = [];
+    private SymfonyStyle $io;
+    private Client $client;
+    private Collection $collection;
+    private GitHelper $gitHelper;
+    /** @var array<string, string> */
+    private array $fetched = [];
 
     /**
      * {@inheritdoc}
      */
-    public function configure()
+    public function configure(): void
     {
         $this->setDescription('This command prepares security related data')
             ->addArgument(
@@ -138,7 +119,7 @@ class SecurityCommand extends Command
      * @param string $version
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    private function processVersion(string $version)
+    private function processVersion(string $version): void
     {
         $utc = new \DateTimeZone('UTC');
 

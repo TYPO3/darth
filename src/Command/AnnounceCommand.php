@@ -38,20 +38,13 @@ use TYPO3Fluid\Fluid\View\TemplateView;
  */
 class AnnounceCommand extends Command
 {
-    /**
-     * @var SymfonyStyle
-     */
-    private $io;
-
-    /**
-     * @var GitHelper
-     */
-    private $gitHelper;
+    private SymfonyStyle $io;
+    private GitHelper $gitHelper;
 
     /**
      * {@inheritdoc}
      */
-    public function configure()
+    public function configure(): void
     {
         $this->setDescription('This command announces (or updates) a release to get.typo3.org')
             ->addArgument(
@@ -231,7 +224,7 @@ class AnnounceCommand extends Command
         return $versionDirectory . '/RELEASE_NOTES.md';
     }
 
-    private function createReleaseNotesFile(string $releaseNotesPath, array $variables)
+    private function createReleaseNotesFile(string $releaseNotesPath, array $variables): void
     {
         $template = $this->getApplication()->getConfigurationFileName(
             'RELEASE_NOTES.md'
@@ -269,7 +262,7 @@ class AnnounceCommand extends Command
         );
     }
 
-    private function readSignatureDate(string $version)
+    private function readSignatureDate(string $version): ?\DateTime
     {
         $process = Process::fromShellCommandline(
             'gpg --verify README.md',
@@ -306,7 +299,7 @@ class AnnounceCommand extends Command
         return new Client($settings);
     }
 
-    private function getConfiguration()
+    private function getConfiguration(): mixed
     {
         $configuration = $this->getApplication()->getConfiguration('announce');
         return $configuration;
@@ -319,7 +312,7 @@ class AnnounceCommand extends Command
      * @return array
      * @deprecated Not used anymore
      */
-    private function inferenceVersionConstraint(string $version, array $configuration, string $path)
+    private function inferenceVersionConstraint(string $version, array $configuration, string $path): array
     {
         $subjectReference = &$this->referencePath($configuration, $path);
         $candidate = $this->evaluate(array_keys($subjectReference), $version);
@@ -333,7 +326,7 @@ class AnnounceCommand extends Command
         return $configuration;
     }
 
-    private function &referencePath(array &$subject, string $path, $delimiter = '.')
+    private function &referencePath(array &$subject, string $path, string $delimiter = '.'): mixed
     {
         $steps = explode($delimiter, $path);
         $result = &$subject;
@@ -343,7 +336,7 @@ class AnnounceCommand extends Command
         return $result;
     }
 
-    private function evaluate(array $candidates, string $version)
+    private function evaluate(array $candidates, string $version): ?string
     {
         $matches = array_filter(
             $candidates,

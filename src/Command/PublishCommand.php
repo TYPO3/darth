@@ -29,15 +29,12 @@ use TYPO3\Darth\Uploader\EltsUploader;
  */
 class PublishCommand extends Command
 {
-    /**
-     * @var SymfonyStyle
-     */
-    private $io;
+    private SymfonyStyle $io;
 
     /**
      * Configures the current command.
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument(
