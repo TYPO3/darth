@@ -21,30 +21,11 @@ use TYPO3\Darth\Model\AnnounceApi\ReleaseNotes;
 
 class AnnounceApiService
 {
-    /**
-     * @var VariableResolveService
-     */
-    private $variableResolveService;
-
-    /**
-     * @var ClientInterface
-     */
-    private $client;
-
-    /**
-     * @var array
-     */
-    private $configuration;
-
     public function __construct(
-        VariableResolveService $variableResolveService,
-        ClientInterface $client,
-        array $configuration
-    ) {
-        $this->variableResolveService = $variableResolveService;
-        $this->client = $client;
-        $this->configuration = $configuration;
-    }
+        private VariableResolveService $variableResolveService,
+        private ClientInterface $client,
+        private array $configuration
+    ) {}
 
     public function getRelease(string $version)
     {
@@ -202,7 +183,7 @@ class AnnounceApiService
         return json_decode((string)$response->getBody(), true);
     }
 
-    private function buildRelease(array $json = null)
+    private function buildRelease(?array $json = null)
     {
         if (empty($json)) {
             return null;
@@ -223,7 +204,7 @@ class AnnounceApiService
         return new HashCollection($json);
     }
 
-    private function buildReleaseNotes(array $json = null)
+    private function buildReleaseNotes(?array $json = null)
     {
         if (empty($json)) {
             return null;

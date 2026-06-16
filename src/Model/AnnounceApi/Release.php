@@ -13,62 +13,18 @@ namespace TYPO3\Darth\Model\AnnounceApi;
 
 class Release implements \JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $version;
-
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var \DateTimeInterface
-     */
-    private $date;
-
-    /**
-     * @var HashCollection
-     */
-    private $tarPackage;
-
-    /**
-     * @var HashCollection
-     */
-    private $zipPackage;
-
-    /**
-     * @var ReleaseNotes
-     */
-    private $releaseNotes;
-
-    /**
-     * @var bool
-     */
-    private $elts;
-
     public function __construct(
-        string $version,
-        string $type,
-        \DateTimeInterface $date,
-        HashCollection $tarPackage,
-        HashCollection $zipPackage,
-        ReleaseNotes $releaseNotes = null,
-        bool $elts = false
+        private string $version,
+        private string $type,
+        private \DateTimeInterface $date,
+        private HashCollection $tarPackage,
+        private HashCollection $zipPackage,
+        private ?ReleaseNotes $releaseNotes = null,
+        private bool $elts = false
     ) {
-        $this->version = $version;
-        $this->type = $type;
-        $this->date = $date;
-        $this->tarPackage = $tarPackage;
-        $this->zipPackage = $zipPackage;
-        $this->releaseNotes = $releaseNotes;
-        $this->elts = $elts;
+
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         $result = [
@@ -85,33 +41,21 @@ class Release implements \JsonSerializable
         return $result;
     }
 
-    /**
-     * @return string
-     */
     public function getVersion(): string
     {
         return $this->version;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @return \DateTimeInterface
-     */
     public function getDate(): \DateTimeInterface
     {
         return $this->date;
     }
 
-    /**
-     * @return \DateTimeInterface
-     */
     public function getUtcDate(): \DateTimeInterface
     {
         /** @var \DateTime|\DateTimeImmutable $date */
@@ -124,33 +68,21 @@ class Release implements \JsonSerializable
         return $date;
     }
 
-    /**
-     * @return HashCollection
-     */
     public function getTarPackage(): HashCollection
     {
         return $this->tarPackage;
     }
 
-    /**
-     * @return HashCollection
-     */
     public function getZipPackage(): HashCollection
     {
         return $this->zipPackage;
     }
 
-    /**
-     * @return ReleaseNotes
-     */
     public function getReleaseNotes(): ReleaseNotes
     {
         return $this->releaseNotes;
     }
 
-    /**
-     * @return bool
-     */
     public function isElts(): bool
     {
         return $this->elts;

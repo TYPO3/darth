@@ -13,26 +13,14 @@ namespace TYPO3\Darth\Model\AnnounceApi;
 
 class ReleaseNotes implements \JsonSerializable
 {
-    private $newsLink;
-    private $news;
-    private $upgradingInstructions;
-    private $changes;
-
     public function __construct(
-        string $newsLink,
-        string $news,
-        string $upgradingInstructions,
-        string $changes
+        private string $newsLink,
+        private string $news,
+        private string $upgradingInstructions,
+        private string $changes
     ) {
-        $this->newsLink = $newsLink;
-        $this->news = $news;
-        $this->upgradingInstructions = $upgradingInstructions;
-        $this->changes = $changes;
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         return [
@@ -43,33 +31,21 @@ class ReleaseNotes implements \JsonSerializable
         ];
     }
 
-    /**
-     * @return string
-     */
     public function getNewsLink(): string
     {
         return $this->newsLink;
     }
 
-    /**
-     * @return string
-     */
     public function getNews(): string
     {
         return $this->news;
     }
 
-    /**
-     * @return string
-     */
     public function getUpgradingInstructions(): string
     {
         return $this->upgradingInstructions;
     }
 
-    /**
-     * @return string
-     */
     public function getChanges(): string
     {
         return $this->changes;

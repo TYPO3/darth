@@ -21,8 +21,7 @@ as well for this commit and pushed to git (ensure that you have rights to add ta
 
         [version] can be either "11.5.3" or "11.5" for detecting the branch and the next version (of no specific version is set)
 
-        --sprint-release    If this option is set, the version is considered as sprint release (e.g. 9.1.0)
-        --commitMessage -m  An additional information to the commit message of the release commit.
+        --sprint-release    If this option is set, the version is considered as sprint release (e.g. 9.1.0) - don't use this for an LTS (e.g. 14.3.0) release
         --interactive   -i  Enabled by default, to verify that the right version and branch is used.
         --dry-run           No push to the remote git repository and gerrit is done, making all changes only in the local repository.
 
