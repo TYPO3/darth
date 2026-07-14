@@ -46,12 +46,6 @@ class ReleaseCommand extends Command
                 'Set it to "8.7" to release the next "8.7.x" version (even if "8.7.0" has not been released). Checks for a branch named like TYPO3_8-7 or uses main'
             )
             ->addOption(
-                'commitMessage',
-                'm',
-                InputOption::VALUE_OPTIONAL,
-                'Additional commit message to [RELEASE] Release of TYPO3 x.y.z'
-            )
-            ->addOption(
                 'sprint-release',
                 null,
                 InputOption::VALUE_NONE,
@@ -129,9 +123,6 @@ class ReleaseCommand extends Command
 
         // Now commit with "[RELEASE] Released TYPO3 x.y.z"
         $commitMessage = '[RELEASE] Release of TYPO3 ' . $nextVersion;
-        if ($input->hasOption('commitMessage') && $input->getOption('commitMessage')) {
-            $commitMessage .= "\n\n" . $input->getOption('commitMessage');
-        }
         $git->run('commit', ['-a', '-S', '--allow-empty', '-m', trim($commitMessage)]);
         $localReleaseCommitHash = $this->gitHelper->getCurrentRevision();
         $this->io->success('Release commit is ' . $localReleaseCommitHash . ' with message ' . "\n\n" . $commitMessage);
