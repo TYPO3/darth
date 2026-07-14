@@ -78,7 +78,7 @@ class Release implements \JsonSerializable
         return $this->zipPackage;
     }
 
-    public function getReleaseNotes(): ReleaseNotes
+    public function getReleaseNotes(): ?ReleaseNotes
     {
         return $this->releaseNotes;
     }
