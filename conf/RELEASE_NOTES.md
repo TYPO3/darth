@@ -12,9 +12,9 @@ This release is a combined bug fix and security release.
 
 Find more details in the security bulletins:
 
-+ https://typo3.org/
-+ https://typo3.org/
-+ https://typo3.org/
++ [TYPO3-CORE-SA-XXXX-XXX / CVE-XXXX-XXXX: ADVISORY TITLE](https://news.typo3.com/security/advisory/typo3-core-sa-xxxx-xxx)
++ [TYPO3-CORE-SA-XXXX-XXX / CVE-XXXX-XXXX: ADVISORY TITLE](https://news.typo3.com/security/advisory/typo3-core-sa-xxxx-xxx)
++ [TYPO3-CORE-SA-XXXX-XXX / CVE-XXXX-XXXX: ADVISORY TITLE](https://news.typo3.com/security/advisory/typo3-core-sa-xxxx-xxx)
 </f:then><f:else if="{sprintRelease}">This version is a sprint release on the way to TYPO3 v{majorVersion} LTS packed with new features and improvements and will receive maintenance and security updates until the next version in the {majorVersion} series is released.
 </f:else><f:else>
 This version is a bugfix and maintenance release.
